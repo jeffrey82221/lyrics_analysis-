@@ -1,4 +1,6 @@
 
+
+
 # XXX read data from file
 import numpy as np
 song_info = [element.split('\t') for element in [line.rstrip('\n') for line in open('data/Western_songs_info.tsv')]]
@@ -57,10 +59,70 @@ class SongInfoData:
             self.ids.append(si.ID)
     def findInfobyID(self,id):
         return self.songinfos[self.ids.index(id)]
+
+
+# TODO tokenize each sentences + stem each sentences
+
+
+# TODO : Before tokenize :
+# Remove none ascii letters
+# remove words in parenthese
+# set all uppercase to lower case (by .lower)
+
+###Functions for cleaning the words in lyrics sentences
+
+def removenoneAscii(array):
+    for char in array:
+        if ord(char)>=128:
+            array = array.replace(char,'')
+    return array
+def removeparenthese(array,type):
+    if type==1:
+        start = array.find( '(' )
+        end = array.find( ')' )
+    elif type==2:
+        start = array.find( '[' )
+        end = array.find( ']' )
+    elif type==3:
+        start = array.find( '<' )
+        end = array.find( '>' )
+    else:
+        return array
+    if start != -1 and end != -1:
+        result = array[:start] + array[end+1:]
+        return result
+    else:
+        return array
+def sentence_cleaning(array):
+    array = removenoneAscii(array)
+    array = removeparenthese(array,2)
+    array = removeparenthese(array,3)
+    return array.lower()
+
+
+
+# TODO remove the sentences with following properties :
+# remove the senteces ends with "" (with no abc in them):
+# remove the sentences with starttime = 0 and end time = 0
+# remove the adj sentenes with same starttime and same endtime #REVIEW
+
+
+# TODO : After tokenize : (stemming process)
+# remove the ... after or before words
+# remove special character such as . , ! ? ... check by eyes #REVIEW
+# recover the word with "-" inside it
+
+
 class SentenceInfo:
     startTime = 0
     endTime = 0
     sentenceType = 0
+    # TODO: What's the meaning of the types of the sentences?
+    # A.
+    # meaning sing by which singer
+    # meaning not the lyrics sentence (introduction sentences)
+    # meaning the same singer singing with different vocal voice ! (ex.different pitch, different timbre, hibrid voice...)
+    # meaning rap!!
     sentence = ""
     tokenized_sentences = []
     def __init__(self,string):
@@ -75,28 +137,7 @@ class SentenceInfo:
         self.sentenceType = int(string[type_lower_bound-1])
         self.sentence = sentence_cleaning(string[type_lower_bound+1:])
         self.tokenized_sentences = self.sentence.split(' ')
-        return array
 
-        for char in array:
-            if ord(char)>=128:
-                array = array.replace(char,'')
-        return array
-        if type==1:
-            start = array.find( '(' )
-            end = array.find( ')' )
-        elif type==2:
-            start = array.find( '[' )
-            end = array.find( ']' )
-        elif type==3:
-            start = array.find( '<' )
-            end = array.find( '>' )
-        else:
-            return array
-        if start != -1 and end != -1:
-            result = array[:start] + array[end+1:]
-            return result
-        else:
-            return array
     def print_info(self):
         print self.startTime,",",self.endTime,",",self.sentenceType,",",self.sentence
 
@@ -109,6 +150,7 @@ class LyricsInfo:
         for element in array[1][:-1]:
             try:
                 sen_info = SentenceInfo(element)
+
                 sentenceInfos.append(sen_info)
             except:
                 sentenceInfos
@@ -142,12 +184,10 @@ class LyricsData:
 
 
 
-# TODO: What's the meaning of the types of the sentences?
-# A.
-# Meaning different singer
-# Meaning not the lyrics sentence (introduction sentences)
-# Meaning the same singer singing with different vocal voice ! (ex.different pitch, different timbre, hibrid voice...)
-# Meaning rap!!
+
+
+##### XXX MAIN CODE START FROM HERE !
+
 
 
 lyrics_data = LyricsData(song_lyrics_data)
@@ -158,7 +198,10 @@ song_info_data = SongInfoData(song_info)
 #song_info_data.findInfobyID(lyrics_data.ids[4]).print_info()
 import random
 index = int(np.floor(random.uniform(0,len(lyrics_data.lyricsinfos))))
-lyrics_data.lyricsinfos[index].print_lyrics()
+
+
+lyrics_data.lyricsinfos[4].print_lyrics()
+
 lyrics_data.lyricsinfos[2100].sentenceInfos[1].tokenized_sentences
 lyrics_data.lyricsinfos[2100].voc_set()
 
@@ -170,87 +213,7 @@ song_info_data.findInfobyID(lyrics_data.lyricsinfos[128].ID).print_info()
 voc_set = lyrics_data.lyricsinfos[157].voc_set()
 voc_set = lyrics_data.voc_set()
 
-# TODO tokenize each sentences + stem each sentences
 
-
-# .lower
-ex_string = lyrics_data.lyricsinfos[128].sentenceInfos[5].sentence
-
-# Remove none ascii lyrics
-
-# TODO : Before tokenize :
-# remove the ascii letter
-
-
-removenoneAscii(ex_string)
-song_info_data[128]
-lyrics_data.lyricsinfos[128].print_lyrics()
-isAscii(lyrics_data.lyricsinfos[128].sentenceInfos[5].sentence)
-lyrics_data.lyricsinfos[8].print_lyrics()
-
-# remove the words in () and [] and <> eg. <sec_st>
-
-
-
-
-removeparenthese("kk<abc>ttt",3)
-
-
-# remove the senteces ends with "":
-
-
-# remove the sentence with starttime = 0 and end time = 0
-
-
-# TODO : divided the lyrics by there paragraph and identify their type of paragraph! It can be an additional feature (HOW?)
-# NOTE:有些歌詞不一定單純以starttime == 0 和 endTime == 0 (簡稱00) 的數量來分界，有可能是以很多個連續的00來分界！
-
-paragraph_num = []
-for lyrics in lyrics_data.lyricsinfos:
-    ar = np.array([element.startTime==0 and element.endTime==0 for element in lyrics.sentenceInfos])
-    num = np.array(ar[1:])-np.array(ar[:-1])
-    paragraph_num.append(sum(num))
-
-
-paragraph_num = [sum([element.startTime==0 and element.endTime==0 for element in lyrics.sentenceInfos]) for lyrics in lyrics_data.lyricsinfos]
-
-ex = [True,True,False,False,True]
-np.array(ex[1:])-np.array(ex[:-1])
-ar = np.array([element.startTime==0 and element.endTime==0 for element in lyrics_data.lyricsinfos[argmax(paragraph_num)].sentenceInfos])
-
-
-plt.plot(np.logical_and(ar[:-1]==True, ar[1:]==False))
-
-
-
-
-
-sentenece_num = [len(lyrics.sentenceInfos) for lyrics in lyrics_data.lyricsinfos]
-
-import matplotlib.pyplot as plt
-
-plt.scatter(paragraph_num,sentenece_num)
-max(paragraph_num)
-lyrics_data.lyricsinfos[argmax(paragraph_num)].print_lyrics()
-min(paragraph_num)
-max(sentenece_num)
-min(sentenece_num)
-
-plt.show()
-
-# remove the adj sentenes with same starttime and same endtime #REVIEW
-# set all uppercase to lower case
-
-
-
-
-
-
-
-# TODO : After tokenize : (stemming process)
-# remove the ... after or before words
-# remove special character such as . , ! ? ... check by eyes #REVIEW
-# recover the word with "-" inside it
 
 # NOTE some special sentences needs to be remove
 # if all character are not in Ascii letters
@@ -438,3 +401,30 @@ for item in all_edge_list:
 outfile.close()
 
 ######END######
+
+
+
+# Future TODO :  divided the lyrics by there paragraph and identify their type of paragraph! It can be an additional feature (HOW?)
+# NOTE:有些歌詞不一定單純以starttime == 0 和 endTime == 0 (簡稱00) 的數量來分界，有可能是以很多個連續的00來分界！
+
+paragraph_num = []
+for lyrics in lyrics_data.lyricsinfos:
+    ar = np.array([element.startTime==0 and element.endTime==0 for element in lyrics.sentenceInfos])
+    num = np.array(ar[1:])-np.array(ar[:-1])
+    paragraph_num.append(sum(num))
+
+
+paragraph_num = [sum([element.startTime==0 and element.endTime==0 for element in lyrics.sentenceInfos]) for lyrics in lyrics_data.lyricsinfos]
+
+sentenece_num = [len(lyrics.sentenceInfos) for lyrics in lyrics_data.lyricsinfos]
+
+import matplotlib.pyplot as plt
+
+plt.scatter(paragraph_num,sentenece_num)
+max(paragraph_num)
+lyrics_data.lyricsinfos[argmax(paragraph_num)].print_lyrics()
+min(paragraph_num)
+max(sentenece_num)
+min(sentenece_num)
+
+plt.show()
