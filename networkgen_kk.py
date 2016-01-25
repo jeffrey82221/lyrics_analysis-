@@ -75,18 +75,12 @@ class SentenceInfo:
         self.sentenceType = int(string[type_lower_bound-1])
         self.sentence = sentence_cleaning(string[type_lower_bound+1:])
         self.tokenized_sentences = self.sentence.split(' ')
-    def sentence_cleaning(array):
-        array = removeAscii(array)
-        array = removeparenthese(array,2)
-        array = removeparenthese(array,3)
         return array
 
-    def removenoneAscii(array):
         for char in array:
             if ord(char)>=128:
                 array = array.replace(char,'')
         return array
-    def removeparenthese(array,type):
         if type==1:
             start = array.find( '(' )
             end = array.find( ')' )
@@ -165,7 +159,6 @@ song_info_data = SongInfoData(song_info)
 import random
 index = int(np.floor(random.uniform(0,len(lyrics_data.lyricsinfos))))
 lyrics_data.lyricsinfos[index].print_lyrics()
-lyrics_data.lyricsinfos[128].print_lyrics()
 lyrics_data.lyricsinfos[2100].sentenceInfos[1].tokenized_sentences
 lyrics_data.lyricsinfos[2100].voc_set()
 
