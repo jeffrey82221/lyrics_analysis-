@@ -73,8 +73,36 @@ class SentenceInfo:
         self.startTime = float(start_string.split(':')[0])*60+float(start_string.split(':')[1])
         self.endTime = float(end_string.split(':')[0])*60+float(end_string.split(':')[1])
         self.sentenceType = int(string[type_lower_bound-1])
-        self.sentence = string[type_lower_bound+1:]
+        self.sentence = sentence_cleaning(string[type_lower_bound+1:])
         self.tokenized_sentences = self.sentence.split(' ')
+    def sentence_cleaning(array):
+        array = removeAscii(array)
+        array = removeparenthese(array,2)
+        array = removeparenthese(array,3)
+        return array
+
+    def removenoneAscii(array):
+        for char in array:
+            if ord(char)>=128:
+                array = array.replace(char,'')
+        return array
+    def removeparenthese(array,type):
+        if type==1:
+            start = array.find( '(' )
+            end = array.find( ')' )
+        elif type==2:
+            start = array.find( '[' )
+            end = array.find( ']' )
+        elif type==3:
+            start = array.find( '<' )
+            end = array.find( '>' )
+        else:
+            return array
+        if start != -1 and end != -1:
+            result = array[:start] + array[end+1:]
+            return result
+        else:
+            return array
     def print_info(self):
         print self.startTime,",",self.endTime,",",self.sentenceType,",",self.sentence
 
@@ -160,11 +188,7 @@ ex_string = lyrics_data.lyricsinfos[128].sentenceInfos[5].sentence
 # TODO : Before tokenize :
 # remove the ascii letter
 
-def removenoneAscii(array):
-    for char in array:
-        if ord(char)>=128:
-            array = array.replace(char,'')
-    return array
+
 removenoneAscii(ex_string)
 song_info_data[128]
 lyrics_data.lyricsinfos[128].print_lyrics()
@@ -173,23 +197,7 @@ lyrics_data.lyricsinfos[8].print_lyrics()
 
 # remove the words in () and [] and <> eg. <sec_st>
 
-def removeparenthese(array,type):
-    if type==1:
-        start = array.find( '(' )
-        end = array.find( ')' )
-    elif type==2:
-        start = array.find( '[' )
-        end = array.find( ']' )
-    elif type==3:
-        start = array.find( '<' )
-        end = array.find( '>' )
-    else:
-        return array
-    if start != -1 and end != -1:
-        result = array[:start] + array[end+1:]
-        return result
-    else:
-        return array
+
 
 
 removeparenthese("kk<abc>ttt",3)
@@ -201,7 +209,7 @@ removeparenthese("kk<abc>ttt",3)
 # remove the sentence with starttime = 0 and end time = 0
 
 
-# TODO : divided the lyrics by there paragraph and identify their type of paragraph! It can be an additional feature 
+# TODO : divided the lyrics by there paragraph and identify their type of paragraph! It can be an additional feature (HOW?)
 # NOTE:有些歌詞不一定單純以starttime == 0 和 endTime == 0 (簡稱00) 的數量來分界，有可能是以很多個連續的00來分界！
 
 paragraph_num = []
