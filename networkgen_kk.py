@@ -173,10 +173,11 @@ class LyricsInfo:
         for element in self.sentenceInfos:
             voc_set = set().union(*[voc_set,element.tokenized_sentences])
         return voc_set
+
 class LyricsData:
     lyricsinfos = []
     ids = []
-    voc = []
+    voc_dict = []
     def __init__(self,array):
         for element in array:
             li = LyricsInfo(element)
@@ -186,23 +187,33 @@ class LyricsData:
     def findInfobyID(self,id):
         return self.lyricsinfos[self.ids.index(id)]
 
-    def voc_array(self):
-        if len(self.voc)==0:
+    def dict_generate(self):
+        if len(self.voc_dict)==0:
             voc_set = set()
             for element in self.lyricsinfos:
                 voc_set = set().union(*[voc_set,element.voc_set()])
             voc_array = list(voc_set)
             voc_array.sort()
-            self.voc = voc_array
-            return self.voc
+            self.voc_dict = (dict(zip(voc_array,range(len(voc_array)))),dict(zip(range(len(voc_array)),voc_array)))
+            #string = ""
+            #for lyrics in self.lyricsinfos:
+            #    for sentenceinfo in lyrics.sentenceInfos:
+            #        string = string.join(sentenceinfo.sentence)
+            #        string.join(" ")
+
+            #all_tokenized = string.split(' ')
+            #voc_set = set(all_tokenized)
+            #voc_array = list(voc_set)
+            #voc_array.sort()
+            #self.voc_dict = (dict(zip(voc_array,range(len(voc_array)))),dict(zip(range(len(voc_array)),voc_array)))
+            return self.voc_dict
         else:
-            return self.voc
+            return self.voc_dict
     def indexify(self,monitor=False):
         for lyrics in self.lyricsinfos:
             for sentence in lyrics.sentenceInfos:
                 for i in range(len(sentence.tokenized_sentences)):
-                    print i
-                    sentence.tokenized_sentences[i] = self.voc.index(sentence.tokenized_sentences[i])
+                    sentence.tokenized_sentences[i] = self.voc_dict[0][sentence.tokenized_sentences[i]]
             if monitor:
                 print lyrics.ID
 
@@ -214,6 +225,8 @@ class LyricsData:
 lyrics_data = LyricsData(song_lyrics_data)
 
 song_info_data = SongInfoData(song_info)
+
+#TESTING : ####################################################################
 #lyrics_data.ids
 #song_info_data.ids
 #song_info_data.findInfobyID(lyrics_data.ids[4]).print_info()
@@ -227,26 +240,34 @@ lyrics_data.lyricsinfos[2100].sentenceInfos[1].tokenized_sentences
 lyrics_data.lyricsinfos[2100].voc_set()
 
 song_info_data.findInfobyID(lyrics_data.lyricsinfos[128].ID).print_info()
-
+#TESTING######################################################################
 
 
 lyrics_data.lyricsinfos[1].print_lyrics()
 
-lyrics_data.voc_array()
-def indexify(lyrics_data,monitor=False):
-    for lyrics in lyrics_data.lyricsinfos:
-        if monitor:
-            print lyrics.ID
-        for element in lyrics.sentenceInfos:
-            for i in range(len(element.tokenized_sentences)):
-                element.tokenized_sentences[i] = lyrics_data.voc.index(element.tokenized_sentences[i])
+voc_dict = lyrics_data.dict_generate()
+lyrics_data.indexify()
+
+#saving the object
+import pickle
+filehandler = open("lyricsdata",'w')
+pickle.dump(lyrics_data,filehandler)
+filehandler.close()
+
+#loading the object 
+fileh2 = open("lyricsdata",'r')
+lyrics_data2 = pickle.load(fileh2)
+fileh2.close()
+lyrics_data2.lyricsinfos[0].print_lyrics()
+
 
 indexify(lyrics_data,monitor=True)
+voc_array
+voc_array.has_key()
+[element for element in lyrics_data.lyricsinfos[3].sentenceInfos[16].tokenized_sentences]
 
-lyrics_data.lyricsinfos[4].sentenceInfos[0].tokenized_sentences
 
-
-lyrics_voc_set = lyrics_data.lyricsinfos[157].voc_set()
+lyrics_data.lyricsinfos[157].voc_set()
 voc_array.index(lyrics_data.lyricsinfos[157].sentenceInfos[1].tokenized_sentences[0])
 voc_array[6850]
 
