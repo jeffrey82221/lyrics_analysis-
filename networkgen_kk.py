@@ -38,12 +38,12 @@ def tokenize(text):
 
 
 class SongInfo:
-    ID = ""
+    ID = None
     title = ""
     album = ""
     artist = ""
     def __init__(self,array):
-        self.ID = array[0]
+        self.ID = int(array[0])
         self.title = array[1]
         self.album = array[2]
         self.artist = array[3]
@@ -151,10 +151,10 @@ class SentenceInfo:
         print self.startTime,",",self.endTime,",",self.sentenceType,",",self.sentence
 
 class LyricsInfo:
-    ID = ""
+    ID = None
     sentenceInfos = []
     def __init__(self,array):
-        self.ID = array[0]
+        self.ID = int(array[0])
         sentenceInfos = []
         for element in array[1][:-1]:
             try:
@@ -221,10 +221,25 @@ class LyricsData:
 ##### XXX MAIN CODE START FROM HERE !
 
 
-
+#REVIEW: #### initialize the lyrics_data object from database
 lyrics_data = LyricsData(song_lyrics_data)
-
 song_info_data = SongInfoData(song_info)
+# XXX form an voc list with voc id
+voc_dict = lyrics_data.dict_generate()
+lyrics_data.indexify()
+
+#REVIEW:####loading the object#########################
+fileh2 = open("lyricsdata",'r')
+lyrics_data = pickle.load(fileh2)
+fileh2.close()
+
+#REVIEW:####saving the object###########################
+import pickle
+filehandler = open("lyricsdata",'w')
+pickle.dump(lyrics_data,filehandler)
+filehandler.close()
+########################################################
+
 
 #TESTING : ####################################################################
 #lyrics_data.ids
@@ -240,36 +255,13 @@ lyrics_data.lyricsinfos[2100].sentenceInfos[1].tokenized_sentences
 lyrics_data.lyricsinfos[2100].voc_set()
 
 song_info_data.findInfobyID(lyrics_data.lyricsinfos[128].ID).print_info()
-#TESTING######################################################################
-
-
-lyrics_data.lyricsinfos[1].print_lyrics()
-
-voc_dict = lyrics_data.dict_generate()
-lyrics_data.indexify()
-
-#saving the object
-import pickle
-filehandler = open("lyricsdata",'w')
-pickle.dump(lyrics_data,filehandler)
-filehandler.close()
-
-#loading the object 
-fileh2 = open("lyricsdata",'r')
-lyrics_data2 = pickle.load(fileh2)
-fileh2.close()
-lyrics_data2.lyricsinfos[0].print_lyrics()
-
-
-indexify(lyrics_data,monitor=True)
-voc_array
-voc_array.has_key()
-[element for element in lyrics_data.lyricsinfos[3].sentenceInfos[16].tokenized_sentences]
 
 
 lyrics_data.lyricsinfos[157].voc_set()
 voc_array.index(lyrics_data.lyricsinfos[157].sentenceInfos[1].tokenized_sentences[0])
 voc_array[6850]
+
+#TESTING######################################################################
 
 # NOTE some special sentences needs to be remove
 # if all character are not in Ascii letters
@@ -297,17 +289,34 @@ voc_array[6850]
 
 
 
-song_lyrics_data
-len(lyrics_data.ids)
 
-lyrics_data.lyricsinfos[126].sentenceInfos
-
-
-
-# TODO form an voc list with voc id
 
 
 # TODO create an adj matrix of song id and voc id
+
+# 14883 lyrics data provided !
+# lyrics_data_ids = [int(element) for element in lyrics_data.ids] #574723~63476142
+
+len(lyrics_data.ids)
+len(song_info_data.ids)
+lyrics_data.lyricsinfos[0].voc_set()
+voc_dict[1].keys()
+lyrics_data.lyricsinfos[1].voc_set()
+adjlist = []
+for element in lyrics_data.lyricsinfos:
+    adjlist.extend(zip([element.ID]*len(element.voc_set()),list(element.voc_set())))
+
+# generate adjlist file
+
+adjlist
+outfile = open("inkk.adjlist",'w')
+for element in adjlist:
+    outfile.write(str(element[0]))
+    outfile.write(" ")
+    outfile.write(str(element[1]))
+    outfile.write("\n")
+
+outfile.close()
 
 # TODO create an adj matrix of song id and voc id with the same sentence connected
 
