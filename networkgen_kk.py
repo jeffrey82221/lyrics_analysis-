@@ -105,6 +105,15 @@ def sentence_cleaning(array):
 # remove the senteces ends with "" (with no abc in them):
 # remove the sentences with starttime = 0 and end time = 0
 # remove the adj sentenes with same starttime and same endtime #REVIEW
+array = "abcSD_"
+
+
+def noabc(array):
+    if sum([element.isalpha() for element in array])==0:
+        return True
+    else:
+        return False
+
 
 
 # TODO : After tokenize : (stemming process)
@@ -167,6 +176,7 @@ class LyricsInfo:
 class LyricsData:
     lyricsinfos = []
     ids = []
+    voc = []
     def __init__(self,array):
         for element in array:
             li = LyricsInfo(element)
@@ -176,14 +186,25 @@ class LyricsData:
     def findInfobyID(self,id):
         return self.lyricsinfos[self.ids.index(id)]
 
-    def voc_set(self):
-        voc_set = set()
-        for element in self.lyricsinfos:
-            voc_set = set().union(*[voc_set,element.voc_set()])
-        return voc_set
-
-
-
+    def voc_array(self):
+        if len(self.voc)==0:
+            voc_set = set()
+            for element in self.lyricsinfos:
+                voc_set = set().union(*[voc_set,element.voc_set()])
+            voc_array = list(voc_set)
+            voc_array.sort()
+            self.voc = voc_array
+            return self.voc
+        else:
+            return self.voc
+    def indexify(self,monitor=False):
+        for lyrics in self.lyricsinfos:
+            for sentence in lyrics.sentenceInfos:
+                for i in range(len(sentence.tokenized_sentences)):
+                    print i
+                    sentence.tokenized_sentences[i] = self.voc.index(sentence.tokenized_sentences[i])
+            if monitor:
+                print lyrics.ID
 
 
 ##### XXX MAIN CODE START FROM HERE !
@@ -198,10 +219,10 @@ song_info_data = SongInfoData(song_info)
 #song_info_data.findInfobyID(lyrics_data.ids[4]).print_info()
 import random
 index = int(np.floor(random.uniform(0,len(lyrics_data.lyricsinfos))))
-
-
-lyrics_data.lyricsinfos[4].print_lyrics()
-
+lyrics_data.lyricsinfos[index].print_lyrics()
+lyrics_data.lyricsinfos[index].ID
+song_info_data.findInfobyID(lyrics_data.lyricsinfos[index].ID).print_info()
+print song_lyrics_data[index][1][4]
 lyrics_data.lyricsinfos[2100].sentenceInfos[1].tokenized_sentences
 lyrics_data.lyricsinfos[2100].voc_set()
 
@@ -209,11 +230,25 @@ song_info_data.findInfobyID(lyrics_data.lyricsinfos[128].ID).print_info()
 
 
 
+lyrics_data.lyricsinfos[1].print_lyrics()
 
-voc_set = lyrics_data.lyricsinfos[157].voc_set()
-voc_set = lyrics_data.voc_set()
+lyrics_data.voc_array()
+def indexify(lyrics_data,monitor=False):
+    for lyrics in lyrics_data.lyricsinfos:
+        if monitor:
+            print lyrics.ID
+        for element in lyrics.sentenceInfos:
+            for i in range(len(element.tokenized_sentences)):
+                element.tokenized_sentences[i] = lyrics_data.voc.index(element.tokenized_sentences[i])
+
+indexify(lyrics_data,monitor=True)
+
+lyrics_data.lyricsinfos[4].sentenceInfos[0].tokenized_sentences
 
 
+lyrics_voc_set = lyrics_data.lyricsinfos[157].voc_set()
+voc_array.index(lyrics_data.lyricsinfos[157].sentenceInfos[1].tokenized_sentences[0])
+voc_array[6850]
 
 # NOTE some special sentences needs to be remove
 # if all character are not in Ascii letters
@@ -244,7 +279,7 @@ voc_set = lyrics_data.voc_set()
 song_lyrics_data
 len(lyrics_data.ids)
 
-lyrics_data.lyricsinfos[126].print_lyrics()
+lyrics_data.lyricsinfos[126].sentenceInfos
 
 
 
