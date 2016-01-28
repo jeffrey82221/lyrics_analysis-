@@ -1,3 +1,4 @@
+import numpy as np
 result_lines = [line.rstrip('\n') for line in open('outkk.embeddings')]
 result_lines
 
@@ -23,8 +24,12 @@ embedding_matrix = np.matrix(embedding_array)
 from sklearn.manifold import TSNE
 model = TSNE(n_components=2, perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,
      n_iter=200, metric='euclidean', init='random')
+
+print "start transforming..."
 embedding_2D = model.fit_transform(embedding_matrix)
 
+
+print "start saving the result..."
 #REVIEW:####saving the object###########################
 import pickle
 pfile = open("reduct_embedding",'w')
