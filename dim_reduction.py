@@ -21,13 +21,13 @@ embedding_array = [e[1] for e in embedding_list]
 embedding_matrix = np.matrix(embedding_array)
 
 # XXX T-SME visualization of result
-from sklearn.manifold import TSNE
-model = TSNE(n_components=2, perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,
-     n_iter=200, metric='euclidean', init='random')
+#from sklearn.manifold import TSNE
+from tsne import bh_sne
+#model = TSNE(n_components=2, perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=200, metric='euclidean', init='random')
 
 print "start transforming..."
-embedding_2D = model.fit_transform(embedding_matrix)
-
+#embedding_2D = model.fit_transform(embedding_matrix)
+embedding_2D = bh_sne(embedding_matrix,d=2,theta=0.8)
 
 print "start saving the result..."
 #REVIEW:####saving the object###########################
