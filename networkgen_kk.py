@@ -229,6 +229,7 @@ voc_dict = lyrics_data.dict_generate()
 lyrics_data.indexify()
 
 #REVIEW:####loading the object#########################
+import pickle
 fileh2 = open("lyricsdata",'r')
 lyrics_data = pickle.load(fileh2)
 fileh2.close()
@@ -238,8 +239,80 @@ import pickle
 filehandler = open("lyricsdata",'w')
 pickle.dump(lyrics_data,filehandler)
 filehandler.close()
+filehandler = open("songinfodata",'w')
+pickle.dump(song_info_data,filehandler)
+filehandler.close()
 ########################################################
+#XXX Read in the Deepwalk generated embedding file 
+result_lines = [line.rstrip('\n') for line in open('outkk.embeddings')]
+result_lines
 
+object_count = len(result_lines)
+splited_result_lines = []
+for i in range(1, len(result_lines)):
+    splited_result_lines.append(result_lines[i].split())
+
+len(splited_result_lines)
+embedding_list = []
+for items in splited_result_lines:
+    embedding_list.append(
+        (int(items[0]), [float(item) for item in items[1:]]))
+
+
+embedding_list.sort()
+
+embedding_key = [e[0] for e in embedding_list]
+embedding_array = [e[1] for e in embedding_list]
+embedding_matrix = np.matrix(embedding_array)
+
+# XXX T-SME visualization of result
+from sklearn.manifold import TSNE
+model = TSNE(n_components=2, perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,
+     n_iter=200, metric='euclidean', init='random')
+embedding_2D = model.fit_transform(embedding_matrix)
+
+
+
+
+#TODO:number of voc as color bound
+from bokeh.plotting import figure, show, output_file
+from bokeh.models import HoverTool
+
+lyrics_size = len(lyrics_data.ids)
+voc_size = len(lyrics_data.voc_dict[0])
+
+colors_red = [
+    "#%02x%02x%02x" % (int(r), int(g), 150) for r, g in zip(50+2*[1]*voc_size, 0+2*[0]*voc_size)
+]
+colors_green = [
+    "#%02x%02x%02x" % (int(r), int(g), 150) for r, g in zip(0+2*[0]*lyrics_size, 30+2*[1]*lyrics_size)
+]
+
+Tools = ['box_zoom','crosshair','resize','reset','pan']
+hover = HoverTool(
+            tooltips=[
+                ("Voc", "@voc"),
+                ("Title", "@title"),
+                ("Artist", "@artist"),
+                ("Album", "@album")
+            ]
+        )
+data_dict = {
+        'voc':player_data['Player'],
+        'title':player_data['status'],
+        'artist':player_data['ADP'],
+        'album':player_data['Avg'],
+    }
+source_1 = ColumnDataSource(data=data_dict)
+Tools.append(hover)
+
+p = figure(tools=Tools)
+p.scatter(x, y,
+          fill_color=colors, fill_alpha=0.6,
+          line_color=None)
+
+output_file("deepwalk_connection1_kk.html", title="deepwalk_connection1_kk.py example")
+show(p)
 
 #TESTING : ####################################################################
 #lyrics_data.ids
@@ -335,7 +408,7 @@ paragraph_num = [sum([element.startTime==0 and element.endTime==0 for element in
 
 sentenece_num = [len(lyrics.sentenceInfos) for lyrics in lyrics_data.lyricsinfos]
 
-##ploting and testing 
+##ploting and testing
 import matplotlib.pyplot as plt
 
 plt.scatter(paragraph_num,sentenece_num)
