@@ -21,12 +21,12 @@ len(song_info_data.ids)
 
 #REVIEW:####load the reduction 2D embedding###########################
 import pickle
-pfile = open("reduct_embedding",'r')
+pfile = open("kk_c1_d64_walk_10_tsne_d2.embeddings",'r')
 embedding_2D = pickle.load(pfile)
 pfile.close()
 
 #XXX Load the un reduce-dimensionalized embedding
-result_lines = [line.rstrip('\n') for line in open('outkkd2.embeddings')]
+result_lines = [line.rstrip('\n') for line in open('kk_c1_d2_walk_10.embeddings')]
 len(result_lines)
 
 object_count = len(result_lines)
@@ -57,20 +57,20 @@ np.shape(embedding_matrix)
 
 #TODO:number of voc as color bound
 from bokeh.plotting import figure, show, output_file
-from bokeh.models import HoverTool
+from bokeh.models import HoverTool,Slider,CustomJS,ColumnDataSource
 
 lyrics_size = len(lyrics_data.ids)
 voc_size = len(lyrics_data.voc_dict[0])
 lyrics_size
 voc_size
 
-colors_red = ["#%02x%02x%02x"%(int(r), int(g), 150) for r, g in zip([50]*voc_size, [0]*voc_size)]
-colors_green = ["#%02x%02x%02x"%(int(r), int(g), 150) for r, g in zip([0]*lyrics_size, [50]*lyrics_size)]
+colors_red = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([255]*voc_size, [0]*voc_size)]
+colors_green = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([0]*lyrics_size, [255]*lyrics_size)]
 colors = []
 colors.extend(colors_red)
 colors.extend(colors_green)
 
-Tools = ['box_zoom','crosshair','resize','reset','pan']
+Tools = ['box_zoom','crosshair','resize','reset','pan','wheel_zoom']
 #TODO : Adding more better tools !
 hover = HoverTool(
             tooltips=[
@@ -90,14 +90,32 @@ data_dict = {
 source_1 = ColumnDataSource(data=data_dict)
 Tools.append(hover)
 
-p = figure(tools=Tools)
 
+source = ColumnDataSource(data = dict(fill_alpha=0.1))
+
+p = figure(tools=Tools,webgl=True)
+
+
+embedding_matrix = np.array(embedding_matrix.tolist())
 p.scatter(embedding_2D[:,0],
           embedding_2D[:,1],
-          fill_color=colors, fill_alpha=0.6,
-          line_color=None)
+          fill_color=colors,
+          line_color=None,
+          fill_alpha=0.1)
 
-output_file("deepwalk_kk_connection1_64d_tsne.html", title="deepwalk_kk_connection1_64d_tsne")
+
+## setting up slider constrol ###########
+callback = CustomJS(args=dict(source=p), code="""
+        var data = source.get('fill_alpha');
+        var alpha = cb_obj.get('value');
+        data = alpha;
+        source.trigger('change');
+    """)
+##########################################################
+
+
+slider = Slider(start=0.1, end=1, value=1, step=.1, title="fill_alpha", callback=callback)
+output_file("kk_c1_d64_walk_10_tsne_d2.html", title="kk_c1_d64_walk_10_tsne_d2")
 show(p)
 
 
@@ -126,5 +144,6 @@ show(p)
 # TODO find the document frequency as radius of the dot of each words in this two set, since we assume
 # that the song can ties the words up , if the words are close, means it maybe appear in many songs, if the words are more outlie,
 # then means it maybe appear last in many songs.
-
+# TODO find how the words is keywords as the radious of the dot of each song
+# Which means that the sum of the tf-idf as the radius of the dot of each song
 # TODO use 3D or 2D deepwalk SOLELY, instead of using TSME (Create another program)
