@@ -1,5 +1,5 @@
 import numpy as np
-result_lines = [line.rstrip('\n') for line in open('outkk.embeddings')]
+result_lines = [line.rstrip('\n') for line in open('outkk_c1_d64.embeddings')]
 result_lines
 
 object_count = len(result_lines)
@@ -27,11 +27,11 @@ from tsne import bh_sne
 
 print "start transforming..."
 #embedding_2D = model.fit_transform(embedding_matrix)
-embedding_2D = bh_sne(embedding_matrix,d=2,theta=0.8)
+embedding_2D = bh_sne(embedding_matrix,d=2,theta=0.5)
 
 print "start saving the result..."
 #REVIEW:####saving the object###########################
 import pickle
-pfile = open("reduct_embedding",'w')
+pfile = open("outkk_c1_d64_tsne_d2",'w')
 pickle.dump(embedding_2D,pfile)
 pfile.close()
