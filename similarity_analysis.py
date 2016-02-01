@@ -81,12 +81,13 @@ def pair_result(query_result,lyrics_data,song_info_data,SorV):
     return result
 
 
+ids = np.sort(lyrics_data.ids)
 
+##REVIEW Searching voc by song
+song_index = 1
 
-song_index = 2
-
-print "search by song : "
-song_info_data.findInfobyID(lyrics_data.ids[song_index]).print_info()
+print "search voc by song : "
+song_info_data.findInfobyID(ids[song_index]).print_info()
 
 
 _,voc_result = voc_kdtree.query(song_matrix[song_index],10)
@@ -94,9 +95,9 @@ _,voc_result = voc_kdtree.query(song_matrix[song_index],10)
 print pair_result(voc_result[0],lyrics_data,song_info_data,'v')
 
 
-voc_index = lyrics_data.voc_dict[0]["sad"]
-
-print "search by voc : "
+voc_index = lyrics_data.voc_dict[0]["fuck"]
+##REVIEW Searching song by voc
+print "search song by voc : "
 print lyrics_data.voc_dict[1][voc_index]
 _,song_result = song_kdtree.query(voc_matrix[voc_index],10)
 
@@ -106,5 +107,32 @@ for element in pair_result(song_result[0],lyrics_data,song_info_data,'s'):
     print "album : ",element[1]
     print "artist :",element[2]
     print "----------------------------------------------------"
+
+##REVIEW Searching voc by voc
+voc_index = lyrics_data.voc_dict[0]["sex"]
+print "search voc by voc : "
+print lyrics_data.voc_dict[1][voc_index]
+_,voc_result = voc_kdtree.query(voc_matrix[voc_index],10)
+
+print pair_result(voc_result[0],lyrics_data,song_info_data,'v')
+
+##REVIEW Searching song by song
+song_index = 10
+
+print "search song by song : "
+song_info_data.findInfobyID(ids[song_index]).print_info()
+_,song_result = song_kdtree.query(song_matrix[song_index],10)
+
+
+
+for element in pair_result(song_result[0],lyrics_data,song_info_data,'s'):
+    print "title : ",element[0]
+    print "album : ",element[1]
+    print "artist :",element[2]
+    print "----------------------------------------------------"
+
+
+
+
 
 #NOTE: Look out that the ids in lyrics_data are not sorted, but the embedding result are sorted with ids !!
