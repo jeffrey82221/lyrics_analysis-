@@ -21,7 +21,7 @@ len(song_info_data.ids)
 
 #REVIEW:####load the reduction 2D embedding###########################
 import pickle
-pfile = open("kk_c1_d64_walk_10_tsne_d2.embeddings",'r')
+pfile = open("outkk_c1_d64_walk_10_tsne_d2",'r')
 embedding_2D = pickle.load(pfile)
 pfile.close()
 
@@ -98,8 +98,8 @@ p = figure(tools=Tools,webgl=True)
 
 embedding_matrix = np.array(embedding_matrix.tolist())
 
-p.scatter(embedding_matrix[:,0],
-          embedding_matrix[:,1],
+p.scatter(embedding_2D[:,0],
+          embedding_2D[:,1],
           fill_color=colors,
           line_color=None,
           fill_alpha=0.1)
@@ -116,7 +116,7 @@ callback = CustomJS(args=dict(source=p), code="""
 
 
 slider = Slider(start=0.1, end=1, value=1, step=.1, title="fill_alpha", callback=callback)
-output_file("kk_c1_d2_walk_100.html", title="kk_c1_d2_walk_100")
+output_file("kk_c1_d64_walk_10_tsne_d2_new.html", title="kk_c1_d64_walk_10_tsne_d2_new")
 show(p)
 
 
