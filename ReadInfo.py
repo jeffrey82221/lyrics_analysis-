@@ -45,7 +45,10 @@ class SongInfoData:
             self.songinfos.append(si)
             self.ids.append(si.ID)
     def findInfobyID(self,id):
-        return self.songinfos[self.ids.index(id)]
+        try:
+            return self.songinfos[self.ids.index(id)]
+        except:
+            return SongInfo(["0","unknown","unknown","unknown"])
 
 
 # TODO tokenize each sentences + stem each sentences

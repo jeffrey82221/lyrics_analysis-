@@ -20,6 +20,7 @@ lyrics_data.indexify()
 len(song_info_data.ids)
 
 #REVIEW:####load the reduction 2D embedding###########################
+import numpy as np
 import pickle
 pfile = open("outkk_c1_d64_walk_10_tsne_d2",'r')
 embedding_2D = pickle.load(pfile)
@@ -56,13 +57,14 @@ np.shape(embedding_matrix)
 # TODO : visualize the scattering using Bokeh
 
 #TODO:number of voc as color bound
+from bokeh.io import vform
 from bokeh.plotting import figure, show, output_file
-from bokeh.models import HoverTool,Slider,CustomJS,ColumnDataSource
-
+from bokeh.models import HoverTool,Slider,CustomJS,ColumnDataSource,glyphs
+from bokeh.models.glyphs import Glyph,Circle
 lyrics_size = len(lyrics_data.ids)
 voc_size = len(lyrics_data.voc_dict[0])
-lyrics_size
-voc_size
+lyrics_size=14883
+voc_size=90218
 
 colors_red = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([255]*voc_size, [0]*voc_size)]
 colors_green = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([0]*lyrics_size, [255]*lyrics_size)]
@@ -88,10 +90,14 @@ data_dict = {
         'album':player_data['Avg'],
     }
 source_1 = ColumnDataSource(data=data_dict)
-Tools.append(hover)
+#Tools.append(hover)
 
 
-source = ColumnDataSource(data = dict(fill_alpha=0.1))
+source = ColumnDataSource(data = dict(
+    x = embedding_2D[:,0],
+    y = embedding_2D[:,1],
+    fill_color = colors,
+    fill_alpha=0.1))
 
 p = figure(tools=Tools,webgl=True)
 
@@ -102,23 +108,32 @@ p.scatter(embedding_2D[:,0],
           embedding_2D[:,1],
           fill_color=colors,
           line_color=None,
-          fill_alpha=0.1)
+          source=source)
+p.circle(source=source)
+output_file("kk_c1_d64_walk_10_tsne_d2_new.html", title="kk_c1_d64_walk_10_tsne_d2_new")
 
+source_test = ColumnDataSource(data = dict(
+    x = [1, 2, 3, 4, 5],
+    y = [6, 7, 2, 4, 5]))
+glyph_renderer = Glyph(
+        data_source = source_test)
 
+p.circle(source=source_test)
+
+show(p)
 ## setting up slider constrol ###########
-callback = CustomJS(args=dict(source=p), code="""
+callback = CustomJS(args=dict(source=source), code="""
         var data = source.get('fill_alpha');
         var alpha = cb_obj.get('value');
         data = alpha;
         source.trigger('change');
     """)
 ##########################################################
-
-
 slider = Slider(start=0.1, end=1, value=1, step=.1, title="fill_alpha", callback=callback)
-output_file("kk_c1_d64_walk_10_tsne_d2_new.html", title="kk_c1_d64_walk_10_tsne_d2_new")
+slider = Slider(start=0.1, end=1, value=1, step=.1, title="fill_alpha")
+layout = vform(slider,p)
+show(layout)
 show(p)
-
 
 # XXX cats & tok_cats
 # TODO: adding different color the different category
