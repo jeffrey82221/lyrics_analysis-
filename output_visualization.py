@@ -22,12 +22,12 @@ len(song_info_data.ids)
 #REVIEW:####load the reduction 2D embedding###########################
 import numpy as np
 import pickle
-pfile = open("outkk_c1_d64_walk_10_tsne_d2",'r')
+pfile = open("kk_c1_d64_walk_100_tsne_d2.embeddings",'r')
 embedding_2D = pickle.load(pfile)
 pfile.close()
 
 #XXX Load the un reduce-dimensionalized embedding
-result_lines = [line.rstrip('\n') for line in open('kk_c1_d2_walk_100.embeddings')]
+result_lines = [line.rstrip('\n') for line in open('kk_c1_d2_walk_10.embeddings')]
 len(result_lines)
 
 object_count = len(result_lines)

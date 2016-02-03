@@ -1,6 +1,6 @@
 from bokeh.io import vform
 from bokeh.plotting import figure, output_file, show, ColumnDataSource,hplot
-from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool
+from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool,Rect
 import numpy as np
 output_file("toolbar.html")
 
@@ -107,6 +107,7 @@ callback_size = CustomJS(args=dict(source_song=source_song,source_voc=source_voc
     """)
 ##########################################################
 slider_alpha = Slider(start=0.1, end=1, value=0.3, step=.1, title="fill_alpha", callback=callback_alpha)
-slider_size = Slider(start=1, end=10, value=5, step=1, title="size", callback=callback_size)
+slider_size = Slider(start=1, end=10, value=8, step=1, title="size", callback=callback_size)
+
 
 show(vform(vform(slider_alpha,slider_size),hplot(p_song,p_voc)))
