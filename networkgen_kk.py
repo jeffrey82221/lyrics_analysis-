@@ -123,15 +123,17 @@ song_ids = [element for element in [line.split(',') for line in open('data/Weste
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
 song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyrics_tmp]
 song_info
-song_lyrics_data[:1]
+song_lyrics_data[0]
 
 # import class that can fatch the lyrics and song data
 import nltk
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
 #REVIEW: #### initialize the lyrics_data object from database
-lyrics_data = LyricsData(song_lyrics_data)
-lyrics_data.lyricsinfos[0].sentenceInfos[2].tokenized_sentences
-nltk.tag._pos_tag(lyrics_data.lyricsinfos[-1].sentenceInfos[-1].tokenized_sentences, None, tagger)
+lyrics_data = LyricsData(song_lyrics_data[:1])
+lyrics_data.lyricsinfos[0].sentenceInfos[1].tokenized_sentences
+lyrics_data.lyricsinfos[0].sentenceInfos[1].pos_tags
+lyrics_data.lyricsinfos[0].print_lyrics()
+len(lyrics_data.lyricsinfos[0].sentenceInfos)
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()

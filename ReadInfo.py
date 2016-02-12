@@ -149,7 +149,12 @@ def get_wordnet_pos(treebank_tag):
 
 wnl = nltk.WordNetLemmatizer()
 tagger = nltk.tag.PerceptronTagger()
-
+t = ['','']
+t.remove('')
+t
+x = []
+x[:] = (value for value in x if value != '')
+x
 class SentenceInfo:
     startTime = 0
     endTime = 0
@@ -162,6 +167,7 @@ class SentenceInfo:
     # meaning rap!!
     sentence = ""
     tokenized_sentences = []
+    pos_tags = []
     def __init__(self,string):
         time_upper_bound = string.index('[')
         time_lower_bound = string.index(']')
@@ -174,10 +180,13 @@ class SentenceInfo:
         self.sentenceType = int(string[type_lower_bound-1])
         self.sentence = sentence_cleaning(string[type_lower_bound+1:])
         self.tokenized_sentences = [applystemming(t,[remove_front_mark,remove_end_mark]) for t in nltk.word_tokenize(self.sentence)]
-        self.tokenized_sentences.remove('')
-        pos_tag = nltk.tag._pos_tag(self.tokenized_sentences, None, tagger)
-        pos_tag_lem = [(element[0],get_wordnet_pos(element[1])) for element in pos_tag]
-        self.tokenized_sentences = [wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
+        self.tokenized_sentences[:] = (value for value in self.tokenized_sentences if value != '') #remove all '' in tokenized_sentences
+        if(len(self.tokenized_sentences)==0):
+            None
+        else:
+            self.pos_tags = nltk.tag._pos_tag(self.tokenized_sentences, None, tagger)
+            pos_tag_lem = [(element[0],get_wordnet_pos(element[1])) for element in self.pos_tags]
+            self.tokenized_sentences = [wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
 
     def print_info(self):
         print self.startTime,",",self.endTime,",",self.sentenceType,",",self.sentence
@@ -189,17 +198,18 @@ class LyricsInfo:
         self.ID = int(array[0])
         sentenceInfos = []
         for element in array[1][:-1]:
-            try:
-                sen_info = SentenceInfo(element)
+            sen_info = SentenceInfo(element)
+            sentenceInfos.append(sen_info)
 
-                sentenceInfos.append(sen_info)
-            except:
-                sentenceInfos
 
         self.sentenceInfos = sentenceInfos
     def print_lyrics(self):
         for element in self.sentenceInfos:
             element.print_info()
+    def print_info(self):
+        for element in self.sentenceInfos:
+            element.print_info()
+            print element.pos_tags
     def voc_set(self):
         voc_set = set()
         for element in self.sentenceInfos:
