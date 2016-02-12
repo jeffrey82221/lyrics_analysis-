@@ -129,10 +129,12 @@ song_lyrics_data[0]
 import nltk
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
 #REVIEW: #### initialize the lyrics_data object from database
-lyrics_data = LyricsData(song_lyrics_data[:1])
-lyrics_data.lyricsinfos[0].sentenceInfos[1].tokenized_sentences
-lyrics_data.lyricsinfos[0].sentenceInfos[1].pos_tags
+#TODO:tokenization is still not very accurate!!
+lyrics_data = LyricsData(song_lyrics_data[:])
+lyrics_data.lyricsinfos[99].sentenceInfos[1].tokenized_sentences
+lyrics_data.lyricsinfos[99].sentenceInfos[1].pos_tags
 lyrics_data.lyricsinfos[0].print_lyrics()
+lyrics_data.lyricsinfos[0].print_info()
 len(lyrics_data.lyricsinfos[0].sentenceInfos)
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id

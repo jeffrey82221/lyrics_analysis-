@@ -169,6 +169,7 @@ class SentenceInfo:
     tokenized_sentences = []
     pos_tags = []
     def __init__(self,string):
+
         time_upper_bound = string.index('[')
         time_lower_bound = string.index(']')
         type_upper_bound = string.index('<')
@@ -198,10 +199,13 @@ class LyricsInfo:
         self.ID = int(array[0])
         sentenceInfos = []
         for element in array[1][:-1]:
-            sen_info = SentenceInfo(element)
-            sentenceInfos.append(sen_info)
-
-
+            try:
+                sen_info = SentenceInfo(element)
+                sentenceInfos.append(sen_info)
+            except:
+                None
+                #NOTE:If this line of data only contain '\r' or '\n' without any time information and sentence text, its an exception!
+                #print "error appears in ",element,"with ID = ",self.ID
         self.sentenceInfos = sentenceInfos
     def print_lyrics(self):
         for element in self.sentenceInfos:
