@@ -23,6 +23,7 @@
 # NOTE some spectial words in lyrics might need to be stem!
 # words that contain lot of '-'
 # words that are an abbreviation ex. I'm ,  thinkin' , He's , ...
+import nltk
 
 class SongInfo:
     ID = None
@@ -95,7 +96,6 @@ def sentence_cleaning(array):
 # remove the senteces ends with "" (with no abc in them):
 # remove the sentences with starttime = 0 and end time = 0
 # remove the adj sentenes with same starttime and same endtime #REVIEW
-array = "abcSD_"
 
 
 def noabc(array):
@@ -111,6 +111,44 @@ def noabc(array):
 # remove special character such as . , ! ? ... check by eyes #REVIEW
 # recover the word with "-" inside it
 
+def remove_front_mark(word):
+    try:
+        if (not word[0].isalpha()):
+            return remove_front_mark(word[1:])
+        else:
+            return word
+    except:
+        return word
+def remove_end_mark(word):
+    try:
+        if (not word[-1].isalpha()):
+            word = word[:-1]
+            return remove_end_mark(word)
+        else:
+            return word
+    except:
+        return word
+
+
+def applystemming(term,function_array):
+    for element in function_array:
+        term = element(term)
+    return term
+
+def get_wordnet_pos(treebank_tag):
+    if treebank_tag.startswith('J'):
+        return nltk.corpus.wordnet.ADJ
+    elif treebank_tag.startswith('V'):
+        return nltk.corpus.wordnet.VERB
+    elif treebank_tag.startswith('N'):
+        return nltk.corpus.wordnet.NOUN
+    elif treebank_tag.startswith('R'):
+        return nltk.corpus.wordnet.ADV
+    else:
+        return ''
+
+wnl = nltk.WordNetLemmatizer()
+tagger = nltk.tag.PerceptronTagger()
 
 class SentenceInfo:
     startTime = 0
@@ -135,7 +173,11 @@ class SentenceInfo:
         self.endTime = float(end_string.split(':')[0])*60+float(end_string.split(':')[1])
         self.sentenceType = int(string[type_lower_bound-1])
         self.sentence = sentence_cleaning(string[type_lower_bound+1:])
-        self.tokenized_sentences = self.sentence.split(' ')
+        self.tokenized_sentences = [applystemming(t,[remove_front_mark,remove_end_mark]) for t in nltk.word_tokenize(self.sentence)]
+        self.tokenized_sentences.remove('')
+        pos_tag = nltk.tag._pos_tag(self.tokenized_sentences, None, tagger)
+        pos_tag_lem = [(element[0],get_wordnet_pos(element[1])) for element in pos_tag]
+        self.tokenized_sentences = [wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
 
     def print_info(self):
         print self.startTime,",",self.endTime,",",self.sentenceType,",",self.sentence
@@ -163,6 +205,7 @@ class LyricsInfo:
         for element in self.sentenceInfos:
             voc_set = set().union(*[voc_set,element.tokenized_sentences])
         return voc_set
+
 
 class LyricsData:
     lyricsinfos = []
