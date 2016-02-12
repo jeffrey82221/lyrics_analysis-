@@ -6,7 +6,7 @@ song_ids = [element for element in [line.split(',') for line in open('data/Weste
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
 song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyrics_tmp]
 song_info
-song_lyrics_data
+len(song_lyrics_data)
 
 # import class that can fatch the lyrics and song data
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
@@ -18,16 +18,17 @@ song_info_data = SongInfoData(song_info)
 voc_dict = lyrics_data.dict_generate()
 lyrics_data.indexify()
 len(song_info_data.ids)
+len(lyrics_data.lyricsinfos)
 
 #REVIEW:####load the reduction 2D embedding###########################
 import numpy as np
 import pickle
-pfile = open("kk_c1_d64_walk_100_tsne_d2.embeddings",'r')
+pfile = open("kk_c1_d64_walk_10_tsne_d2_new",'r')
 embedding_2D = pickle.load(pfile)
 pfile.close()
 
 #XXX Load the un reduce-dimensionalized embedding
-result_lines = [line.rstrip('\n') for line in open('kk_c1_d2_walk_10.embeddings')]
+result_lines = [line.rstrip('\n') for line in open('kk_c1_d2_walk_100.embeddings')]
 len(result_lines)
 
 object_count = len(result_lines)
@@ -46,7 +47,7 @@ embedding_list.sort()
 
 embedding_key = [e[0] for e in embedding_list]
 embedding_array = [e[1] for e in embedding_list]
-embedding_matrix = np.matrix(embedding_array)
+embedding_matrix = np.array(embedding_array)
 
 #XXX check if two embedding matrix are in same data size
 np.shape(embedding_2D)

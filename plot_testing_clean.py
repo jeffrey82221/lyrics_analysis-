@@ -2,10 +2,13 @@ from bokeh.io import vform
 from bokeh.plotting import figure, output_file, show, ColumnDataSource,hplot
 from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool,Rect
 import numpy as np
-output_file("toolbar.html")
+output_file("kk_c1_d64_walk_10_tsne_d2_new(interactive).html")
+#REVIEW:input embedding object :
+embedding = embedding_2D
 
 lyrics_size = len(lyrics_data.ids)
 voc_size = len(lyrics_data.voc_dict[0])
+
 lyrics_size=14883
 voc_size=90218
 
@@ -28,28 +31,28 @@ len(artist_list)
 #REVIEW restart here!
 source_song = ColumnDataSource(
         data=dict(
-            x=embedding_matrix[voc_size:,0],
-            y=embedding_matrix[voc_size:,1],
-            size = [1]*(lyrics_size),
+            x=embedding[voc_size:,0],
+            y=embedding[voc_size:,1],
+            size = [5]*(lyrics_size),
             title=title_list,
             album=album_list,
             artist=artist_list,
             #voc = voc_list,
-            alpha=[0.1]*(lyrics_size)
+            alpha=[0.3]*(lyrics_size)
             #color=colors,
             #SorV = [0]*(voc_size)+[1]*(lyrics_size)
             )
     )
 source_voc = ColumnDataSource(
         data=dict(
-            x=embedding_matrix[:voc_size,0],
-            y=embedding_matrix[:voc_size,1],
-            size = [1]*(voc_size),
+            x=embedding[:voc_size,0],
+            y=embedding[:voc_size,1],
+            size = [5]*(voc_size),
             #title=title_list,
             #album=album_list,
             #artist=artist_list,
             voc = voc_list,
-            alpha=[0.1]*(voc_size),
+            alpha=[0.3]*(voc_size),
             #color=colors,
             #SorV = [1]*(voc_size)+[0]*(lyrics_size)
             )
@@ -109,5 +112,35 @@ callback_size = CustomJS(args=dict(source_song=source_song,source_voc=source_voc
 slider_alpha = Slider(start=0.1, end=1, value=0.3, step=.1, title="fill_alpha", callback=callback_alpha)
 slider_size = Slider(start=1, end=10, value=8, step=1, title="size", callback=callback_size)
 
+#construct the graph map for checking the location of zooming
+colors_red = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([255]*voc_size, [0]*voc_size)]
+colors_green = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([0]*lyrics_size, [255]*lyrics_size)]
+colors = []
+colors.extend(colors_red)
+colors.extend(colors_green)
 
-show(vform(vform(slider_alpha,slider_size),hplot(p_song,p_voc)))
+
+source = ColumnDataSource({'x': [], 'y': [], 'width': [], 'height': []})
+
+jscode="""
+        var data = source.get('data');
+        var start = range.get('start');
+        var end = range.get('end');
+        data['%s'] = [start + (end - start) / 2];
+        data['%s'] = [end - start];
+        source.trigger('change');
+    """
+p_song.x_range.callback = CustomJS(
+        args=dict(source=source, range=p_song.x_range), code=jscode % ('x', 'width'))
+p_song.y_range.callback = CustomJS(
+        args=dict(source=source, range=p_song.y_range), code=jscode % ('y', 'height'))
+p_map = figure(title='See Zoom Window Here',
+            tools='', plot_width=300, plot_height=300,webgl=True)
+
+p_map.scatter(x=embedding[:,0], y=embedding[:,1], radius=0.1, fill_alpha=0.1,color=colors, line_color=None)
+
+rect = Rect(x='x', y='y', width='width', height='height', fill_alpha=0.1,
+            line_color='black', fill_color='black')
+p_map.add_glyph(source, rect)
+
+show(vform(hplot(p_map,vform(slider_alpha,slider_size)),hplot(p_voc,p_song)))

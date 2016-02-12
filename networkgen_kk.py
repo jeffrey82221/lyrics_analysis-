@@ -9,6 +9,7 @@ from nltk.stem.lancaster import LancasterStemmer
 from numpy import *
 import matplotlib.pyplot as plt
 sb = SnowballStemmer('english')
+
 # lc = LancasterStemmer()
 
 
@@ -30,6 +31,89 @@ def tokenize(text):
     return stems
 ################################################################################
 
+####TESTING the cleaning process
+
+
+
+
+
+sb = nltk.SnowballStemmer("english", ignore_stopwords=True)
+wnl = nltk.WordNetLemmatizer()
+tagger = nltk.tag.PerceptronTagger()
+stemming_function_array = [remove_front_mark,remove_end_mark,sb.stem,wnl.lemmatize]
+len(set([applystemming(t,[remove_front_mark,remove_end_mark]) for t in voc_list]))
+
+#TODO:I can use the edition distance as an idication for stemming the same vocabulary (voc in lyrics often repeat or contain some differences!)
+sb.stem('gone')
+wnl.lemmatize('gone', pos='v')
+
+from nltk.corpus import wordnet
+def get_wordnet_pos(treebank_tag):
+    if treebank_tag.startswith('J'):
+        return nltk.corpus.wordnet.ADJ
+    elif treebank_tag.startswith('V'):
+        return nltk.corpus.wordnet.VERB
+    elif treebank_tag.startswith('N'):
+        return nltk.corpus.wordnet.NOUN
+    elif treebank_tag.startswith('R'):
+        return nltk.corpus.wordnet.ADV
+    else:
+        return ''
+
+
+
+
+#NOTE:pos_tag before stem to get a more accurate lemmatize reference
+pos_tag = nltk.pos_tag(nltk.word_tokenize("I studied late. "))
+
+
+
+pos_tag = nltk.tag._pos_tag(['I','am','testing','the','tagger'], None, tagger)
+
+
+pos_tag_lem = [(element[0],get_wordnet_pos(element[1])) for element in pos_tag]
+
+[wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
+
+
+
+nltk.pos_tag([sb.stem(t) for t in nltk.word_tokenize("I study late.")])
+wnl.lemmatize("is",pos='v')
+remove_front_mark(remove_end_mark(''))
+
+tokens = SentenceInfo(song_lyrics_data[0][1][1]).tokenized_sentences
+tokens
+
+word_tokenize(tokens)
+pos_tag(word_tokenize("doesn't"))
+
+original_list = list(voc_list)
+cleaned_list = list([sb.stem(t) for t in voc_list])
+
+#REVIEW:testing the difference of two stemmed voc
+lem_list = np.array(cleaned_list)[np.array(cleaned_list)!=np.array(original_list)].tolist()
+ori_list = np.array(original_list)[np.array(cleaned_list)!=np.array(original_list)].tolist()
+
+
+for p,l in zip(lem_list,ori_list):
+    print p,l
+
+
+
+
+
+
+
+
+
+wnl.lemmatize('doctors')
+len(set(cleaned_voc_list))
+len(set(stemmed_voc_list))
+len(set(lemmatized_voc_list))
+set(lemmatized_voc_list)
+
+
+
 
 ##### XXX MAIN CODE START FROM HERE !
 # XXX read data from file ##########################################################
@@ -39,17 +123,21 @@ song_ids = [element for element in [line.split(',') for line in open('data/Weste
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
 song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyrics_tmp]
 song_info
-song_lyrics_data
+song_lyrics_data[:1]
 
 # import class that can fatch the lyrics and song data
+import nltk
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
-
 #REVIEW: #### initialize the lyrics_data object from database
 lyrics_data = LyricsData(song_lyrics_data)
+lyrics_data.lyricsinfos[0].sentenceInfos[2].tokenized_sentences
+nltk.tag._pos_tag(lyrics_data.lyricsinfos[-1].sentenceInfos[-1].tokenized_sentences, None, tagger)
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
 lyrics_data.indexify()
+
+voc_list = voc_dict[0].keys()
 
 #REVIEW:####loading the object#########################
 import pickle
