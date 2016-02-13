@@ -117,31 +117,83 @@ set(lemmatized_voc_list)
 
 ##### XXX MAIN CODE START FROM HERE !
 # XXX read data from file ##########################################################
+from detecting_language import *
 import numpy as np
 song_info = [element.split('\t') for element in [line.rstrip('\n') for line in open('data/Western_songs_info.tsv')]]
 song_ids = [element for element in [line.split(',') for line in open('data/Western_songs.csv')][0]]
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
 song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyrics_tmp]
 song_info
-song_lyrics_data[0]
+song_lyrics_data[0][1]
+#TODO:remove none english songs :
+#detecting language
+language_tag = [get_language(''.join([sen for sen in element[1]])) for element in song_lyrics_data]
 
+new_song_lyrics_data = [song_lyrics_data[i]  for i in range(len(language_tag)) if language_tag[i]=='english']
+len(new_song_lyrics_data)
+
+##################################################################################
+
+#REVIEW:Language Analysis :
+#NOTE:
+# 1. Chinise songs are mistakenly detected
+# 2. Song with no vocal are mistakenly detected
+# 3. Possiblly there are some songs are of special spelling language, for example, marlesian ,indonisian, indian,etc...
+set(language_tag)
+language_tag.count('english')
+#TODO:to much to check
+language_tag.count('danish')
+#NOTE:only the first song are possible danish song
+language_tag.count('french')
+#NOTE:English Songs with a lot of 'la' are mistakenly detected as french songs
+language_tag.count('german')
+#NOTE:the first 4 songs are all germen, but the last one are not.
+language_tag.count('hungarian')
+#NOTE:all hungarian detected songs are actually chinese songs
+language_tag.count('italian')
+#NOTE:
+language_tag.count('norwegian')
+#NOTE:the second one is chinese
+language_tag.count('portuguese')
+#NOTE:one is chinese and one is korean
+language_tag.count('spanish')
+#NOTE:one are chinese
+language_tag.count('swedish') #Strange
+#NOTE:most are in Chinese , Japanese , Korean
+
+def findAllSongsOfLanguage(song_info_data,song_lyrics_data,language_tag,language):
+    #result = []
+    for i in range(len(language_tag)):
+        if(language_tag[i]==language):
+            t = song_info_data.findInfobyID(int(song_lyrics_data[i][0]))
+            print t.title,t.album,t.artist
+            for element in song_lyrics_data[i][1]:
+                print element
+
+    #return result
+findAllSongsOfLanguage(song_info_data,song_lyrics_data,language_tag,'spanish')
+
+####################################################################################
 # import class that can fatch the lyrics and song data
 import nltk
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
-lyrics_data = LyricsData(song_lyrics_data[:])
-lyrics_data.lyricsinfos[99].sentenceInfos[1].tokenized_sentences
-lyrics_data.lyricsinfos[99].sentenceInfos[1].pos_tags
-lyrics_data.lyricsinfos[0].print_lyrics()
-lyrics_data.lyricsinfos[0].print_info()
+#TODO:remove the sentence without words
+lyrics_data = LyricsData(new_song_lyrics_data)
+lyrics_data.lyricsinfos[99].sentenceInfos[4].tokenized_sentences
+lyrics_data.lyricsinfos[99].sentenceInfos[4].pos_tags
+lyrics_data.lyricsinfos[216].print_lyrics()
+lyrics_data.lyricsinfos[216].print_info()
 len(lyrics_data.lyricsinfos[0].sentenceInfos)
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
 lyrics_data.indexify()
-
+####################################################################################
 voc_list = voc_dict[0].keys()
+voc_list
+
 
 #REVIEW:####loading the object#########################
 import pickle
@@ -213,7 +265,7 @@ voc_array[6850]
 
 
 
-
+###################################################################################
 # TODO create an adj matrix of song id and voc id
 
 # 14883 lyrics data provided !
@@ -222,7 +274,7 @@ voc_array[6850]
 len(lyrics_data.ids)
 len(song_info_data.ids)
 lyrics_data.lyricsinfos[0].voc_set()
-voc_dict[1].keys()
+voc_dict[0].keys()
 lyrics_data.lyricsinfos[1].voc_set()
 adjlist = []
 for element in lyrics_data.lyricsinfos:
@@ -231,7 +283,7 @@ for element in lyrics_data.lyricsinfos:
 # generate adjlist file
 
 adjlist
-outfile = open("inkk.adjlist",'w')
+outfile = open("inkk_cleaned.adjlist",'w')
 for element in adjlist:
     outfile.write(str(element[0]))
     outfile.write(" ")
@@ -239,7 +291,7 @@ for element in adjlist:
     outfile.write("\n")
 
 outfile.close()
-
+###################################################################################
 # TODO create an adj matrix of song id and voc id with the same sentence connected
 
 
