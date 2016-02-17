@@ -1,5 +1,6 @@
 
 # XXX read data from file ##########################################################
+from detecting_language import *
 import numpy as np
 song_info = [element.split('\t') for element in [line.rstrip('\n') for line in open('data/Western_songs_info.tsv')]]
 song_ids = [element for element in [line.split(',') for line in open('data/Western_songs.csv')][0]]
@@ -8,11 +9,18 @@ song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyr
 song_info
 len(song_lyrics_data)
 
+#filtering language
+language_tag = [get_language(''.join([sen for sen in element[1]])) for element in song_lyrics_data]
+new_song_lyrics_data = [song_lyrics_data[i]  for i in range(len(language_tag)) if language_tag[i]=='english']
+
+len(new_song_lyrics_data)
 # import class that can fatch the lyrics and song data
+import nltk
+
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
 
 #REVIEW: #### initialize the lyrics_data object from database
-lyrics_data = LyricsData(song_lyrics_data)
+lyrics_data = LyricsData(new_song_lyrics_data)
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
@@ -20,15 +28,17 @@ lyrics_data.indexify()
 len(song_info_data.ids)
 len(lyrics_data.lyricsinfos)
 
+
 #REVIEW:####load the reduction 2D embedding###########################
 import numpy as np
 import pickle
-pfile = open("kk_c1_d64_walk_10_tsne_d2_new",'r')
+pfile = open("embeddings/kk_c1_d64_walk_100_tsne_d2_cleaned.embeddings",'r')
 embedding_2D = pickle.load(pfile)
 pfile.close()
-
+len(lyrics_data.lyricsinfos)+len(voc_dict[0])
+len(embedding_2D)
 #XXX Load the un reduce-dimensionalized embedding
-result_lines = [line.rstrip('\n') for line in open('kk_c1_d2_walk_100.embeddings')]
+result_lines = [line.rstrip('\n') for line in open('embeddings/kk_c1_d2_walk_100_cleaned.embeddings')]
 len(result_lines)
 
 object_count = len(result_lines)
