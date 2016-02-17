@@ -109,6 +109,15 @@ callback_size = CustomJS(args=dict(source_song=source_song,source_voc=source_voc
         source_song.trigger('change');
         source_voc.trigger('change');
     """)
+
+##TODO create a selection callback
+# voc color should be change according to voc count
+# non selected words should be 0 alpha
+# voc_count should be merge
+# Two different mode:
+# 1. after the selected words change the unselected words don't change ; (I can see different group clearly)
+# 2. after the selected words change the unselected words recover.
+
 ##########################################################
 slider_alpha = Slider(start=0.1, end=1, value=0.3, step=.1, title="fill_alpha", callback=callback_alpha)
 slider_size = Slider(start=1, end=10, value=8, step=1, title="size", callback=callback_size)
