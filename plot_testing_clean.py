@@ -2,15 +2,16 @@ from bokeh.io import vform
 from bokeh.plotting import figure, output_file, show, ColumnDataSource,hplot
 from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool,Rect
 import numpy as np
-output_file("kk_c1_d64_walk_10_tsne_d2_new(interactive).html")
+output_file("kk_c1_d64_walk_100_tsne_d2_cleaned(interactive).html")
+map_radius = 1
 #REVIEW:input embedding object :
 embedding = embedding_2D
 
 lyrics_size = len(lyrics_data.ids)
 voc_size = len(lyrics_data.voc_dict[0])
 
-lyrics_size=14883
-voc_size=90218
+lyrics_size+voc_size
+
 
 voc_list = [lyrics_data.voc_dict[1][i] for i in range(voc_size)]
 len(voc_list)
@@ -71,9 +72,9 @@ hover_voc = HoverTool(
 Tools_song = [BoxZoomTool(), ResetTool(),WheelZoomTool(),PanTool(),hover_song,LassoSelectTool()]
 Tools_voc = [BoxZoomTool(), ResetTool(),WheelZoomTool(),PanTool(),hover_voc,LassoSelectTool()]
 p_song = figure(tools=Tools_song,
-           title="Testing",webgl=True)
+           title="SONG",webgl=True)
 p_voc = figure(tools=Tools_voc,
-           title="Testing",webgl=True,x_range = p_song.x_range,y_range = p_song.y_range)
+           title="VOC",webgl=True,x_range = p_song.x_range,y_range = p_song.y_range)
 p_song.circle('x', 'y', size='size',fill_alpha = 'alpha',fill_color="#%02x%02x%02x"%(0, 255, 0),line_color=None, source=source_song)
 p_voc.circle('x', 'y', size='size',fill_alpha = 'alpha',fill_color="#%02x%02x%02x"%(255, 0, 0),line_color=None, source=source_voc)
 
@@ -137,7 +138,7 @@ p_song.y_range.callback = CustomJS(
 p_map = figure(title='See Zoom Window Here',
             tools='', plot_width=300, plot_height=300,webgl=True)
 
-p_map.scatter(x=embedding[:,0], y=embedding[:,1], radius=0.1, fill_alpha=0.1,color=colors, line_color=None)
+p_map.scatter(x=embedding[:,0], y=embedding[:,1], radius=map_radius, fill_alpha=0.1,color=colors, line_color=None)
 
 rect = Rect(x='x', y='y', width='width', height='height', fill_alpha=0.1,
             line_color='black', fill_color='black')
