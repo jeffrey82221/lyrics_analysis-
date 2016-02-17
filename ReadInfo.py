@@ -195,6 +195,7 @@ class SentenceInfo:
 class LyricsInfo:
     ID = None
     sentenceInfos = []
+    vocSet = None
     def __init__(self,array):
         self.ID = int(array[0])
         sentenceInfos = []
@@ -215,11 +216,23 @@ class LyricsInfo:
             element.print_info()
             print element.pos_tags
     def voc_set(self):
-        voc_set = set()
+        vocSet = set()
         for element in self.sentenceInfos:
-            voc_set = set().union(*[voc_set,element.tokenized_sentences])
-        return voc_set
+            vocSet = set().union(*[vocSet,element.tokenized_sentences])
+        self.vocSet = vocSet
+        return vocSet
 
+
+    def voc_dict(self):
+        vocs = []
+        for element in self.sentenceInfos:
+            vocs.extend(element.tokenized_sentences)
+        vocSet = list(self.voc_set())
+        vocSet.sort()
+        count = []
+        for element in vocSet:
+            count.append(vocs.count(element))
+        return dict(zip(vocs,count))
 
 class LyricsData:
     lyricsinfos = []

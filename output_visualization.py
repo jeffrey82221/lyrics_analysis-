@@ -59,11 +59,14 @@ embedding_key = [e[0] for e in embedding_list]
 embedding_array = [e[1] for e in embedding_list]
 embedding_matrix = np.array(embedding_array)
 
+len(voc_dict[1])
 #XXX check if two embedding matrix are in same data size
 np.shape(embedding_2D)
 np.shape(embedding_matrix)
 
 
+#Testing the Class
+[element.voc_dict() for element in lyrics_data.lyricsinfos]
 
 # TODO : visualize the scattering using Bokeh
 
