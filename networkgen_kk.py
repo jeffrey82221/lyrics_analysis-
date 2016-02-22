@@ -1,7 +1,4 @@
 
-
-
-
 ####NLTK Testing ##############################################################################
 from nltk import *
 # from nltk.stem.snowball import SnowballStemmer
@@ -75,8 +72,6 @@ pos_tag_lem = [(element[0],get_wordnet_pos(element[1])) for element in pos_tag]
 
 [wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
 
-
-
 nltk.pos_tag([sb.stem(t) for t in nltk.word_tokenize("I study late.")])
 wnl.lemmatize("is",pos='v')
 remove_front_mark(remove_end_mark(''))
@@ -97,14 +92,6 @@ ori_list = np.array(original_list)[np.array(cleaned_list)!=np.array(original_lis
 
 for p,l in zip(lem_list,ori_list):
     print p,l
-
-
-
-
-
-
-
-
 
 wnl.lemmatize('doctors')
 len(set(cleaned_voc_list))

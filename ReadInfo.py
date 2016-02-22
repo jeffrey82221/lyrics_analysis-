@@ -24,6 +24,7 @@
 # words that contain lot of '-'
 # words that are an abbreviation ex. I'm ,  thinkin' , He's , ...
 import nltk
+from collections import Counter
 
 class SongInfo:
     ID = None
@@ -238,6 +239,7 @@ class LyricsData:
     lyricsinfos = []
     ids = []
     voc_dict = []
+    document_frequency = Counter()
     def __init__(self,array):
         for element in array:
             li = LyricsInfo(element)
@@ -251,6 +253,7 @@ class LyricsData:
         if len(self.voc_dict)==0:
             voc_set = set()
             for element in self.lyricsinfos:
+                self.document_frequency += Counter(element.voc_set())
                 voc_set = set().union(*[voc_set,element.voc_set()])
             voc_array = list(voc_set)
             voc_array.sort()

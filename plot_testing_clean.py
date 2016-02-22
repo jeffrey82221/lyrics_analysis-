@@ -1,63 +1,168 @@
+#TODO:
+#lyrics selection is wrong ! check the visualization.py
+#able to change size power, with DF or TF information remaining
+#
 from bokeh.io import vform
 from bokeh.plotting import figure, output_file, show, ColumnDataSource,hplot
 from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool,Rect
 import numpy as np
 output_file("kk_c1_d64_walk_100_tsne_d2_cleaned(interactive).html")
-map_radius = 1
+map_radius = 0.7
+start_size = 5
+start_alpha = 0.3
 #REVIEW:input embedding object :
 embedding = embedding_2D
 
 lyrics_size = len(lyrics_data.ids)
 voc_size = len(lyrics_data.voc_dict[0])
 
-lyrics_size+voc_size
-
 
 voc_list = [lyrics_data.voc_dict[1][i] for i in range(voc_size)]
 len(voc_list)
-
+voc_doc_freq = []
+for element in voc_list:
+    voc_doc_freq.append(lyrics_data.document_frequency[element])
+#TESTING DOCUMENT FREQUENCY!
+max(voc_doc_freq)
+voc_doc_freq.index(max(voc_doc_freq))
+voc_list[26963]
+#import numpy as np
+#import matplotlib.pylab as plt
+#plt.hist(np.log(np.array(voc_doc_freq)/float(lyrics_size))+10,100)
+#plt.show()
 sorted_ids = np.sort(lyrics_data.ids)
-
+voc_doc_freq_size = np.log(np.array(voc_doc_freq)/float(lyrics_size))+10
 title_list = [song_info_data.findInfobyID(element).title for element in sorted_ids]
 album_list = [song_info_data.findInfobyID(element).album for element in sorted_ids]
 artist_list = [song_info_data.findInfobyID(element).artist for element in sorted_ids]
-
+#lyrics_list = [element.voc_dict() for element in lyrics_data.lyricsinfos]#TODO:here we should sort lyrics by ids
+lyrics_list = [lyrics_data.lyricsinfos[lyrics_data.ids.index(e)].voc_dict() for e in sorted_ids]#lyrics_data.ids.index(e) for e in sorted_ids
 #XXX extend the label list to full size
 
+len(lyrics_list)
 len(voc_list)
 len(title_list)
 len(album_list)
 len(artist_list)
-
 #REVIEW restart here!
+
 source_song = ColumnDataSource(
         data=dict(
             x=embedding[voc_size:,0],
             y=embedding[voc_size:,1],
-            size = [5]*(lyrics_size),
+            size = [start_size]*(lyrics_size),
             title=title_list,
             album=album_list,
             artist=artist_list,
             #voc = voc_list,
-            alpha=[0.3]*(lyrics_size)
-            #color=colors,
+            alpha=[start_alpha]*(lyrics_size),
+            lyrics = lyrics_list
             #SorV = [0]*(voc_size)+[1]*(lyrics_size)
             )
     )
+lyrics_data.lyricsinfos[0].voc_dict()
+title_list[0]
+album_list[0]
+[voc_list[e] for e in lyrics_list[0].keys()]
+#TODO change the source_voc to the displaying property, and elsewhere for storing DF TF
 source_voc = ColumnDataSource(
         data=dict(
             x=embedding[:voc_size,0],
             y=embedding[:voc_size,1],
-            size = [5]*(voc_size),
+            size = voc_doc_freq_size.tolist(),#[start_size]*(voc_size),
             #title=title_list,
             #album=album_list,
             #artist=artist_list,
             voc = voc_list,
-            alpha=[0.3]*(voc_size),
-            #color=colors,
+            alpha=[start_alpha]*(voc_size),
+            color=["#%02x%02x%02x"%(255, e, 0) for e in voc_doc_freq_size.tolist()],
             #SorV = [1]*(voc_size)+[0]*(lyrics_size)
+
             )
     )
+source_voc_fix = ColumnDataSource(
+    data=dict(
+        size = [start_size],
+        alpha = [start_alpha]
+    )
+)
+source_voc_size = ColumnDataSource(
+    data=dict(
+        size = voc_doc_freq_size.tolist()#[start_size]*(voc_size),
+    )
+)
+
+##TODO create a selection callback
+# voc color should be change according to voc count
+# non selected words should be 0 alpha
+# voc_count should be merge
+# Two different mode:
+# 1. after the selected words change the unselected words don't change ; (I can see different group clearly)
+# 2. after the selected words change the unselected words recover.
+
+source_song.callback = CustomJS(args=dict(source=source_voc,sf=source_voc_fix,svs=source_voc_size), code="""
+        var inds = cb_obj.get('selected')['1d'].indices;
+        var song_data = cb_obj.get('data');
+        var voc_data = source.get('data');
+        var voc_size = sf.get('data')['size'][0];
+        var voc_alpha = sf.get('data')['alpha'][0];
+        var voc_size_tmp = svs.get('data')['size'];
+        Object.extend = function(destination, source) {
+            for (var property in source) {
+                if (destination.hasOwnProperty(property)) {
+                    destination[property] += source[property];
+                }else{
+                    destination[property]=source[property];
+                }
+            }
+            return destination;
+        };
+        var vocs = {
+
+        };
+        for (i = 0; i < inds.length; i++) {
+            vocs = Object.extend(vocs, song_data['lyrics'][inds[i]]);
+            //var key = Object.keys(song_data['lyrics'][inds[i]]);
+            //for (j=0;j<key.length;j++){
+            //    vocs.add(key[j]);
+            //}
+        }
+        var key = Object.keys(vocs);
+        var select_array = new Array(voc_data['alpha'].length);
+        key.forEach(function(value) {
+            select_array[value]=1;
+        });
+        function componentToHex(c) {
+            var hex = c.toString(16);
+            return hex.length == 1 ? "0" + hex : hex;
+        }
+
+        function rgbToHex(r, g, b) {
+            return "#" + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        for (i=0;i<select_array.length;i++){
+            if(inds.length==0){
+                voc_data['alpha'][i] = voc_alpha;
+                voc_data['size'][i] = voc_size_tmp[i];//TODO:Change to Document Freq.
+                voc_data['color'][i] = rgbToHex(255, 0, 0);
+            }else{
+                if(select_array[i]==1){
+                    voc_data['alpha'][i] = voc_alpha;
+                    voc_data['size'][i] = Math.pow(vocs[i],voc_size);//TODO:Change to tf-idf
+                    voc_data['color'][i] = rgbToHex(255,voc_data['size'][i],0);//map from size
+                    voc_size_tmp[i]=voc_data['size'][i];
+                }else{
+                    voc_data['alpha'][i] = 0;
+                    voc_data['size'][i] = 0;
+                    voc_data['color'][i] = rgbToHex(255, 0, 0);
+                }
+            }
+
+        }
+
+        source.trigger('change');
+    """)
 hover_song = HoverTool(
         tooltips=[
             ("title", "@title"),
@@ -75,14 +180,16 @@ p_song = figure(tools=Tools_song,
            title="SONG",webgl=True)
 p_voc = figure(tools=Tools_voc,
            title="VOC",webgl=True,x_range = p_song.x_range,y_range = p_song.y_range)
-p_song.circle('x', 'y', size='size',fill_alpha = 'alpha',fill_color="#%02x%02x%02x"%(0, 255, 0),line_color=None, source=source_song)
-p_voc.circle('x', 'y', size='size',fill_alpha = 'alpha',fill_color="#%02x%02x%02x"%(255, 0, 0),line_color=None, source=source_voc)
+p_song.circle('x', 'y', size='size',fill_alpha = 'alpha',fill_color="#%02x%02x%02x"%(0, 255, 0),line_color="#%02x%02x%02x"%(0,255,0),line_alpha=0.8, source=source_song)
+p_voc.circle('x', 'y', size='size',fill_alpha = 'alpha',fill_color='color',line_color=None, source=source_voc)
 
 
-callback_alpha = CustomJS(args=dict(source_song=source_song,source_voc=source_voc), code="""
+callback_alpha = CustomJS(args=dict(source_song=source_song,source_voc=source_voc,sf=source_voc_fix), code="""
         var song_data = source_song.get('data');
         var voc_data = source_voc.get('data');
         var f = cb_obj.get('value');
+        //source_voc.get('alpha') = f;
+        sf.get('data')['alpha'][0]=f;
         song_alpha = song_data['alpha'];
         voc_alpha = voc_data['alpha'];
         for (i=0;i<song_alpha.length;i++){
@@ -94,33 +201,29 @@ callback_alpha = CustomJS(args=dict(source_song=source_song,source_voc=source_vo
         source_song.trigger('change');
         source_voc.trigger('change');
     """)
-callback_size = CustomJS(args=dict(source_song=source_song,source_voc=source_voc), code="""
+callback_size = CustomJS(args=dict(source_song=source_song,source_voc=source_voc,sf=source_voc_fix,svs=source_voc_size), code="""
         var song_data = source_song.get('data');
         var voc_data = source_voc.get('data');
         var f = cb_obj.get('value');
+        var voc_size_tmp = svs.get('data')['size'];
+        //source_voc.get('size') = f;
+        sf.get('data')['size'][0]=f;
         song_size = song_data['size'];
         voc_size = voc_data['size'];
         for (i=0;i<song_size.length;i++){
             song_size[i]=f;
         }
         for (i=0;i<voc_size.length;i++){
-            voc_size[i]=f;
+            voc_size[i]=Math.pow(voc_size_tmp[i],f);
+            //voc_size[i]=f;
         }
         source_song.trigger('change');
         source_voc.trigger('change');
     """)
 
-##TODO create a selection callback
-# voc color should be change according to voc count
-# non selected words should be 0 alpha
-# voc_count should be merge
-# Two different mode:
-# 1. after the selected words change the unselected words don't change ; (I can see different group clearly)
-# 2. after the selected words change the unselected words recover.
-
 ##########################################################
-slider_alpha = Slider(start=0.1, end=1, value=0.3, step=.1, title="fill_alpha", callback=callback_alpha)
-slider_size = Slider(start=1, end=10, value=8, step=1, title="size", callback=callback_size)
+slider_alpha = Slider(start=0.1, end=1, value=start_alpha, step=.1, title="fill_alpha", callback=callback_alpha)
+slider_size = Slider(start=0.1, end=1, value=start_size, step=.1, title="size", callback=callback_size)
 
 #construct the graph map for checking the location of zooming
 colors_red = ["#%02x%02x%02x"%(int(r), int(g), 0) for r, g in zip([255]*voc_size, [0]*voc_size)]
@@ -147,9 +250,9 @@ p_song.y_range.callback = CustomJS(
 p_map = figure(title='See Zoom Window Here',
             tools='', plot_width=300, plot_height=300,webgl=True)
 
-p_map.scatter(x=embedding[:,0], y=embedding[:,1], radius=map_radius, fill_alpha=0.1,color=colors, line_color=None)
+p_map.scatter(x=embedding[:,0], y=embedding[:,1], radius=map_radius, fill_alpha=0.08,color=colors, line_color=None)
 
-rect = Rect(x='x', y='y', width='width', height='height', fill_alpha=0.1,
+rect = Rect(x='x', y='y', width='width', height='height', fill_alpha=0.3,
             line_color='black', fill_color='black')
 p_map.add_glyph(source, rect)
 

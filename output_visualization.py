@@ -16,7 +16,7 @@ new_song_lyrics_data = [song_lyrics_data[i]  for i in range(len(language_tag)) i
 len(new_song_lyrics_data)
 # import class that can fatch the lyrics and song data
 import nltk
-
+from collections import Counter
 from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
 
 #REVIEW: #### initialize the lyrics_data object from database
@@ -24,7 +24,14 @@ lyrics_data = LyricsData(new_song_lyrics_data)
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
+voc_dict[1]
+lyrics_data.lyricsinfos[0].voc_set()
+lyrics_data.ids[1]
 lyrics_data.indexify()
+[voc_dict[1][e] for e in list(lyrics_data.lyricsinfos[0].voc_set())]
+lyrics_data.lyricsinfos[0].print_lyrics()
+
+
 len(song_info_data.ids)
 len(lyrics_data.lyricsinfos)
 
@@ -64,9 +71,41 @@ len(voc_dict[1])
 np.shape(embedding_2D)
 np.shape(embedding_matrix)
 
-
+#############################################################################################
 #Testing the Class
+
 [element.voc_dict() for element in lyrics_data.lyricsinfos]
+from collections import Counter
+count_tf = Counter()
+for y in lyrics_data.lyricsinfos:
+  count_tf += Counter(y.voc_dict())
+
+count_df = Counter()
+for y in lyrics_data.lyricsinfos[:10]:
+  count_df += Counter(set(y.voc_dict().keys()))
+dict(count_tf)
+dict(count_df)
+count_tfidf = dict()
+for element in count_tf.keys():
+    count_tfidf[element] = float(count_tf[element])/float(count_df[element])
+count_tfidf
+
+
+
+occur_doc = {}
+count = 0
+for doc in lyrics_data.lyricsinfos:
+    for v in doc.voc_dict().keys():
+        try:
+            occur_doc[v].append((count,doc.voc_dict()[v]))
+        except:
+            occur_doc[v]=[]
+            occur_doc[v].append((count,doc.voc_dict()[v]))
+    count=count+1
+#transform to occurence dict
+for v in occur_doc.keys():
+    occur_doc[v]=dict(occur_doc[v])
+occur_doc
 
 # TODO : visualize the scattering using Bokeh
 
