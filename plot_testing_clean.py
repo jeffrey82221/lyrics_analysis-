@@ -1,7 +1,11 @@
 #TODO:
-#lyrics selection is wrong ! check the visualization.py
-#able to change size power, with DF or TF information remaining
-#
+#XXX lyrics selection is wrong ! check the visualization.py
+#XXX able to change size power, with DF or TF information remaining
+#TODO able to switch from TF to TFIDF
+#TODO term frequency should be normalize by song word count before adding them together
+#TODO summed term frequency should be devided by song number (normalize)
+#TODO song selection by words
+
 from bokeh.io import vform
 from bokeh.plotting import figure, output_file, show, ColumnDataSource,hplot
 from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool,Rect
@@ -31,7 +35,7 @@ voc_list[26963]
 #plt.hist(np.log(np.array(voc_doc_freq)/float(lyrics_size))+10,100)
 #plt.show()
 sorted_ids = np.sort(lyrics_data.ids)
-voc_doc_freq_size = np.log(np.array(voc_doc_freq)/float(lyrics_size))+10
+voc_doc_freq_size = -np.log(np.array(voc_doc_freq)/float(lyrics_size))
 title_list = [song_info_data.findInfobyID(element).title for element in sorted_ids]
 album_list = [song_info_data.findInfobyID(element).album for element in sorted_ids]
 artist_list = [song_info_data.findInfobyID(element).artist for element in sorted_ids]
@@ -77,9 +81,11 @@ source_voc = ColumnDataSource(
             alpha=[start_alpha]*(voc_size),
             color=["#%02x%02x%02x"%(255, e, 0) for e in voc_doc_freq_size.tolist()],
             #SorV = [1]*(voc_size)+[0]*(lyrics_size)
+            docfreq = voc_doc_freq_size.tolist()
 
             )
     )
+
 source_voc_fix = ColumnDataSource(
     data=dict(
         size = [start_size],
@@ -107,6 +113,23 @@ source_song.callback = CustomJS(args=dict(source=source_voc,sf=source_voc_fix,sv
         var voc_size = sf.get('data')['size'][0];
         var voc_alpha = sf.get('data')['alpha'][0];
         var voc_size_tmp = svs.get('data')['size'];
+        function sum( obj ) {
+            var sum = 0;
+            for( var el in obj ) {
+                if( obj.hasOwnProperty( el ) ) {
+                  sum += parseFloat( obj[el] );
+                }
+            }
+          return sum;
+        }
+        function normalize(voc){
+            var summed = sum(voc);
+            //console.log(Object.keys(voc));
+            for(var el in voc){
+                voc[el] = voc[el]/summed;
+            }
+            return voc;
+        }
         Object.extend = function(destination, source) {
             for (var property in source) {
                 if (destination.hasOwnProperty(property)) {
@@ -127,6 +150,8 @@ source_song.callback = CustomJS(args=dict(source=source_voc,sf=source_voc_fix,sv
             //    vocs.add(key[j]);
             //}
         }
+        var voc_sum = sum(vocs);
+        vocs = normalize(vocs);//do the normalization to all voc
         var key = Object.keys(vocs);
         var select_array = new Array(voc_data['alpha'].length);
         key.forEach(function(value) {
@@ -149,7 +174,10 @@ source_song.callback = CustomJS(args=dict(source=source_voc,sf=source_voc_fix,sv
             }else{
                 if(select_array[i]==1){
                     voc_data['alpha'][i] = voc_alpha;
-                    voc_data['size'][i] = Math.pow(vocs[i],voc_size);//TODO:Change to tf-idf
+                    //voc_data['size'][i] = Math.pow(vocs[i]*voc_data['docfreq'][i]*select_array.length/inds.length,voc_size);//TODO:Change to tf-idf with normalized voc tf with normalized by song count
+                    //voc_data['size'][i] = Math.pow(vocs[i]*select_array.length/inds.length,voc_size);//TODO:Change to tf
+                    //voc_data['size'][i] = Math.pow(vocs[i]*voc_data['docfreq'][i]*voc_sum,voc_size);//TODO:Change to tf-idf with normalized voc tf with normalized by term count
+                    voc_data['size'][i] = Math.pow(vocs[i]*voc_sum,voc_size);//TODO:Change to tf
                     voc_data['color'][i] = rgbToHex(255,voc_data['size'][i],0);//map from size
                     voc_size_tmp[i]=voc_data['size'][i];
                 }else{

@@ -71,6 +71,7 @@ len(voc_dict[1])
 np.shape(embedding_2D)
 np.shape(embedding_matrix)
 
+
 #############################################################################################
 #Testing the Class
 
