@@ -1,16 +1,18 @@
 #TODO:
 #XXX lyrics selection is wrong ! check the visualization.py
 #XXX able to change size power, with DF or TF information remaining
+#TODO label id to song, so that I can check with KKBOX radio player!
 #TODO able to switch from TF to TFIDF
 #TODO term frequency should be normalize by song word count before adding them together
 #TODO summed term frequency should be devided by song number (normalize)
 #TODO song selection by words
 
+
 from bokeh.io import vform
 from bokeh.plotting import figure, output_file, show, ColumnDataSource,hplot
 from bokeh.models import HoverTool,CustomJS,Slider,BoxZoomTool, ResetTool,WheelZoomTool,PanTool,LassoSelectTool,Rect
 import numpy as np
-output_file("kk_c1_d64_walk_100_tsne_d2_cleaned(interactive).html")
+output_file("kk_c1_d64_walk_100_tsne_d2_cleaned(interactive)_id.html")
 map_radius = 0.7
 start_size = 5
 start_alpha = 0.3
@@ -58,6 +60,7 @@ source_song = ColumnDataSource(
             title=title_list,
             album=album_list,
             artist=artist_list,
+            ids = sorted_ids,
             #voc = voc_list,
             alpha=[start_alpha]*(lyrics_size),
             lyrics = lyrics_list
@@ -174,10 +177,10 @@ source_song.callback = CustomJS(args=dict(source=source_voc,sf=source_voc_fix,sv
             }else{
                 if(select_array[i]==1){
                     voc_data['alpha'][i] = voc_alpha;
-                    //voc_data['size'][i] = Math.pow(vocs[i]*voc_data['docfreq'][i]*select_array.length/inds.length,voc_size);//TODO:Change to tf-idf with normalized voc tf with normalized by song count
+                    voc_data['size'][i] = Math.pow(vocs[i]*voc_data['docfreq'][i]*select_array.length/inds.length,voc_size);//TODO:Change to tf-idf with normalized voc tf with normalized by song count
                     //voc_data['size'][i] = Math.pow(vocs[i]*select_array.length/inds.length,voc_size);//TODO:Change to tf
                     //voc_data['size'][i] = Math.pow(vocs[i]*voc_data['docfreq'][i]*voc_sum,voc_size);//TODO:Change to tf-idf with normalized voc tf with normalized by term count
-                    voc_data['size'][i] = Math.pow(vocs[i]*voc_sum,voc_size);//TODO:Change to tf
+                    //voc_data['size'][i] = Math.pow(vocs[i]*voc_sum,voc_size);//TODO:Change to tf
                     voc_data['color'][i] = rgbToHex(255,voc_data['size'][i],0);//map from size
                     voc_size_tmp[i]=voc_data['size'][i];
                 }else{
@@ -195,7 +198,9 @@ hover_song = HoverTool(
         tooltips=[
             ("title", "@title"),
             ("album", "@album"),
-            ("artist", "@artist")        ]
+            ("artist", "@artist"),
+            ("id", "@ids")
+                    ]
     )
 hover_voc = HoverTool(
         tooltips=[

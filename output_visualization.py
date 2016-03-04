@@ -75,6 +75,11 @@ np.shape(embedding_matrix)
 #############################################################################################
 #Testing the Class
 
+#REVIEW:search nearest song!
+lyrics_data.ids
+
+
+
 [element.voc_dict() for element in lyrics_data.lyricsinfos]
 from collections import Counter
 count_tf = Counter()
