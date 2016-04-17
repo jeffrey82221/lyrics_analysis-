@@ -6,6 +6,7 @@ from nltk.stem.lancaster import LancasterStemmer
 from numpy import *
 import matplotlib.pyplot as plt
 sb = SnowballStemmer('english')
+import nltk
 
 # lc = LancasterStemmer()
 
@@ -110,14 +111,16 @@ song_info = [element.split('\t') for element in [line.rstrip('\n') for line in o
 song_ids = [element for element in [line.split(',') for line in open('data/Western_songs.csv')][0]]
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
 song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyrics_tmp]
-song_info
-song_lyrics_data[0][1]
+
+print 'number of songs in Western_songs.csv',len(song_ids)
+print 'number of songs in Western_songs_info.csv',len(song_info)
+print 'number of songs in Western_songs_lyrics.tsv',len(song_lyrics_tmp)
 #TODO:remove none english songs :
 #detecting language
 language_tag = [get_language(''.join([sen for sen in element[1]])) for element in song_lyrics_data]
 
 new_song_lyrics_data = [song_lyrics_data[i]  for i in range(len(language_tag)) if language_tag[i]=='english']
-len(new_song_lyrics_data)
+print 'song number after non english songs are removed:',len(new_song_lyrics_data)
 
 ##################################################################################
 
@@ -126,26 +129,26 @@ len(new_song_lyrics_data)
 # 1. Chinise songs are mistakenly detected
 # 2. Song with no vocal are mistakenly detected
 # 3. Possiblly there are some songs are of special spelling language, for example, marlesian ,indonisian, indian,etc...
-set(language_tag)
-language_tag.count('english')
+#set(language_tag)
+#language_tag.count('english')
 #TODO:to much to check
-language_tag.count('danish')
+#language_tag.count('danish')
 #NOTE:only the first song are possible danish song
-language_tag.count('french')
+#language_tag.count('french')
 #NOTE:English Songs with a lot of 'la' are mistakenly detected as french songs
-language_tag.count('german')
+#language_tag.count('german')
 #NOTE:the first 4 songs are all germen, but the last one are not.
-language_tag.count('hungarian')
+#language_tag.count('hungarian')
 #NOTE:all hungarian detected songs are actually chinese songs
-language_tag.count('italian')
+#language_tag.count('italian')
 #NOTE:
-language_tag.count('norwegian')
+#language_tag.count('norwegian')
 #NOTE:the second one is chinese
-language_tag.count('portuguese')
+#language_tag.count('portuguese')
 #NOTE:one is chinese and one is korean
-language_tag.count('spanish')
+#language_tag.count('spanish')
 #NOTE:one are chinese
-language_tag.count('swedish') #Strange
+#language_tag.count('swedish') #Strange
 #NOTE:most are in Chinese , Japanese , Korean
 
 def findAllSongsOfLanguage(song_info_data,song_lyrics_data,language_tag,language):

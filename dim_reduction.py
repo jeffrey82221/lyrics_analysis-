@@ -29,6 +29,8 @@ print "start transforming..."
 #embedding_2D = model.fit_transform(embedding_matrix)
 embedding_2D = bh_sne(embedding_matrix,d=3,theta=0.2)
 
+#TODO:save the result as excel file
+
 print "start saving the result..."
 #REVIEW:####saving the object###########################
 import pickle
