@@ -10,3 +10,5 @@ toolbar.html
 *.xlsx
 
 *.embeddings
+
+*.html
