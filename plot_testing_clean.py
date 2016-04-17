@@ -44,12 +44,41 @@ artist_list = [song_info_data.findInfobyID(element).artist for element in sorted
 #lyrics_list = [element.voc_dict() for element in lyrics_data.lyricsinfos]#TODO:here we should sort lyrics by ids
 lyrics_list = [lyrics_data.lyricsinfos[lyrics_data.ids.index(e)].voc_dict() for e in sorted_ids]#lyrics_data.ids.index(e) for e in sorted_ids
 #XXX extend the label list to full size
-
 len(lyrics_list)
 len(voc_list)
 len(title_list)
 len(album_list)
 len(artist_list)
+
+########################################################################
+#REVIEW:Writing data to excel file
+from pandas import DataFrame
+
+df = DataFrame({
+    'Voc or Song':[1]*len(voc_list)+[0]*len(title_list),
+    'Voc':voc_list+[None]*len(title_list),
+    'Title':[None]*len(voc_list)+title_list,
+    'Album':[None]*len(voc_list)+album_list,
+    'Artist':[0]*len(voc_list)+album_list,
+    'X': embedding[:,0].tolist(),
+    'Y': embedding[:,1].tolist()
+})
+
+
+DataFrame({
+    'Voc or Song':[1]*len(voc_list)+[0]*len(title_list),
+    'Voc':voc_list+[None]*len(title_list),
+    'Title':[None]*len(voc_list)+title_list,
+    'Album':[None]*len(voc_list)+album_list,
+    'Artist':[None]*len(voc_list)+artist_list,
+    'X': embedding[:,0].tolist(),
+    'Y': embedding[:,1].tolist()})
+
+
+df.to_excel('test.xlsx', sheet_name='sheet1', index=False)
+
+
+########################################################################
 #REVIEW restart here!
 
 source_song = ColumnDataSource(

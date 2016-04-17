@@ -2,3 +2,11 @@
 *.csv
 
 *.tsv
+
+toolbar.html
+
+*.html
+
+*.xlsx
+
+*.embeddings
