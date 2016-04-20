@@ -63,99 +63,97 @@ class SongInfoData:
 
 ###Functions for cleaning the words in lyrics sentences
 
-def removenoneAscii(array):
-    for char in array:
-        if ord(char)>=128:
-            array = array.replace(char,'')
-    return array
-def removeparenthese(array,type):
-    if type==1:
-        start = array.find( '(' )
-        end = array.find( ')' )
-    elif type==2:
-        start = array.find( '[' )
-        end = array.find( ']' )
-    elif type==3:
-        start = array.find( '<' )
-        end = array.find( '>' )
-    else:
+class Util:
+    tagger = None
+    wnl = None
+    def __init__(self):
+        self.tagger = nltk.PerceptronTagger()
+        self.wnl = nltk.stem.WordNetLemmatizer()
+    def removenoneAscii(self,array):
+        for char in array:
+            if ord(char)>=128:
+                array = array.replace(char,'')
         return array
-    if start != -1 and end != -1:
-        result = array[:start] + array[end+1:]
-        return result
-    else:
-        return array
-def sentence_cleaning(array):
-    array = removenoneAscii(array)
-    array = removeparenthese(array,2)
-    array = removeparenthese(array,3)
-    return array.lower()
-
-
-
-# TODO remove the sentences with following properties :
-# remove the senteces ends with "" (with no abc in them):
-# remove the sentences with starttime = 0 and end time = 0
-# remove the adj sentenes with same starttime and same endtime #REVIEW
-
-
-def noabc(array):
-    if sum([element.isalpha() for element in array])==0:
-        return True
-    else:
-        return False
-
-
-
-# TODO : After tokenize : (stemming process)
-# remove the ... after or before words
-# remove special character such as . , ! ? ... check by eyes #REVIEW
-# recover the word with "-" inside it
-
-def remove_front_mark(word):
-    try:
-        if (not word[0].isalpha()):
-            return remove_front_mark(word[1:])
+    def removeparenthese(self,array,type):
+        if type==1:
+            start = array.find( '(' )
+            end = array.find( ')' )
+        elif type==2:
+            start = array.find( '[' )
+            end = array.find( ']' )
+        elif type==3:
+            start = array.find( '<' )
+            end = array.find( '>' )
         else:
-            return word
-    except:
-        return word
-def remove_end_mark(word):
-    try:
-        if (not word[-1].isalpha()):
-            word = word[:-1]
-            return remove_end_mark(word)
+            return array
+        if start != -1 and end != -1:
+            result = array[:start] + array[end+1:]
+            return result
         else:
+            return array
+    def sentence_cleaning(self,array):
+        array = self.removenoneAscii(array)
+        array = self.removeparenthese(array,2)
+        array = self.removeparenthese(array,3)
+        return array.lower()
+
+
+
+    # TODO remove the sentences with following properties :
+    # remove the senteces ends with "" (with no abc in them):
+    # remove the sentences with starttime = 0 and end time = 0
+    # remove the adj sentenes with same starttime and same endtime #REVIEW
+
+
+    def noabc(self,array):
+        if sum([element.isalpha() for element in array])==0:
+            return True
+        else:
+            return False
+
+
+
+    # TODO : After tokenize : (stemming process)
+    # remove the ... after or before words
+    # remove special character such as . , ! ? ... check by eyes #REVIEW
+    # recover the word with "-" inside it
+
+    def remove_front_mark(self,word):
+        try:
+            if (not word[0].isalpha()):
+                return self.remove_front_mark(word[1:])
+            else:
+                return word
+        except:
             return word
-    except:
-        return word
+    def remove_end_mark(self,word):
+        try:
+            if (not word[-1].isalpha()):
+                word = word[:-1]
+                return self.remove_end_mark(word)
+            else:
+                return word
+        except:
+            return word
 
 
-def applystemming(term,function_array):
-    for element in function_array:
-        term = element(term)
-    return term
+    def applystemming(self,term,function_array):
+        for element in function_array:
+            term = element(term)
+        return term
 
-def get_wordnet_pos(treebank_tag):
-    if treebank_tag.startswith('J'):
-        return nltk.corpus.wordnet.ADJ
-    elif treebank_tag.startswith('V'):
-        return nltk.corpus.wordnet.VERB
-    elif treebank_tag.startswith('N'):
-        return nltk.corpus.wordnet.NOUN
-    elif treebank_tag.startswith('R'):
-        return nltk.corpus.wordnet.ADV
-    else:
-        return ''
+    def get_wordnet_pos(self,treebank_tag):
+        if treebank_tag.startswith('J'):
+            return nltk.corpus.wordnet.ADJ
+        elif treebank_tag.startswith('V'):
+            return nltk.corpus.wordnet.VERB
+        elif treebank_tag.startswith('N'):
+            return nltk.corpus.wordnet.NOUN
+        elif treebank_tag.startswith('R'):
+            return nltk.corpus.wordnet.ADV
+        else:
+            return ''
 
-wnl = nltk.WordNetLemmatizer()
-tagger = nltk.tag.PerceptronTagger()
-t = ['','']
-t.remove('')
-t
-x = []
-x[:] = (value for value in x if value != '')
-x
 class SentenceInfo:
     startTime = 0
     endTime = 0
@@ -169,8 +167,8 @@ class SentenceInfo:
     sentence = ""
     tokenized_sentences = []
     pos_tags = []
-    def __init__(self,string):
-
+    def __init__(self,string,util):
+        u = util
         time_upper_bound = string.index('[')
         time_lower_bound = string.index(']')
         type_upper_bound = string.index('<')
@@ -180,15 +178,15 @@ class SentenceInfo:
         self.startTime = float(start_string.split(':')[0])*60+float(start_string.split(':')[1])
         self.endTime = float(end_string.split(':')[0])*60+float(end_string.split(':')[1])
         self.sentenceType = int(string[type_lower_bound-1])
-        self.sentence = sentence_cleaning(string[type_lower_bound+1:])
-        self.tokenized_sentences = [applystemming(t,[remove_front_mark,remove_end_mark]) for t in nltk.word_tokenize(self.sentence)]
+        self.sentence = u.sentence_cleaning(string[type_lower_bound+1:])
+        self.tokenized_sentences = [u.applystemming(t,[u.remove_front_mark,u.remove_end_mark]) for t in nltk.word_tokenize(self.sentence)]
         self.tokenized_sentences[:] = (value for value in self.tokenized_sentences if value != '') #remove all '' in tokenized_sentences
         if(len(self.tokenized_sentences)==0):
             None
         else:
-            self.pos_tags = nltk.tag._pos_tag(self.tokenized_sentences, None, tagger)
-            pos_tag_lem = [(element[0],get_wordnet_pos(element[1])) for element in self.pos_tags]
-            self.tokenized_sentences = [wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
+            self.pos_tags = nltk.tag._pos_tag(self.tokenized_sentences, None, u.tagger)
+            pos_tag_lem = [(element[0],u.get_wordnet_pos(element[1])) for element in self.pos_tags]
+            self.tokenized_sentences = [u.wnl.lemmatize(t[0],pos=t[1]) if t[1]!='' else t[0] for t in pos_tag_lem]
 
     def print_info(self):
         print self.startTime,",",self.endTime,",",self.sentenceType,",",self.sentence
@@ -197,12 +195,12 @@ class LyricsInfo:
     ID = None
     sentenceInfos = []
     vocSet = None
-    def __init__(self,array):
+    def __init__(self,array,util):
         self.ID = int(array[0])
         sentenceInfos = []
         for element in array[1][:-1]:
             try:
-                sen_info = SentenceInfo(element)
+                sen_info = SentenceInfo(element,util)
                 sentenceInfos.append(sen_info)
             except:
                 None
@@ -240,9 +238,11 @@ class LyricsData:
     ids = []
     voc_dict = []
     document_frequency = Counter()
+    util = None
     def __init__(self,array):
+        self.util = Util()
         for element in array:
-            li = LyricsInfo(element)
+            li = LyricsInfo(element,self.util)
             self.lyricsinfos.append(li)
             self.ids.append(li.ID)
     # TODO: the function that can find an info of an corresponding lyrics

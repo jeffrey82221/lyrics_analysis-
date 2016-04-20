@@ -129,26 +129,26 @@ print 'song number after non english songs are removed:',len(new_song_lyrics_dat
 # 1. Chinise songs are mistakenly detected
 # 2. Song with no vocal are mistakenly detected
 # 3. Possiblly there are some songs are of special spelling language, for example, marlesian ,indonisian, indian,etc...
-#set(language_tag)
-#language_tag.count('english')
+set(language_tag)
+language_tag.count('english')
 #TODO:to much to check
-#language_tag.count('danish')
+language_tag.count('danish')
 #NOTE:only the first song are possible danish song
-#language_tag.count('french')
+language_tag.count('french')
 #NOTE:English Songs with a lot of 'la' are mistakenly detected as french songs
-#language_tag.count('german')
+language_tag.count('german')
 #NOTE:the first 4 songs are all germen, but the last one are not.
-#language_tag.count('hungarian')
+language_tag.count('hungarian')
 #NOTE:all hungarian detected songs are actually chinese songs
-#language_tag.count('italian')
+language_tag.count('italian')
 #NOTE:
-#language_tag.count('norwegian')
+language_tag.count('norwegian')
 #NOTE:the second one is chinese
-#language_tag.count('portuguese')
+language_tag.count('portuguese')
 #NOTE:one is chinese and one is korean
-#language_tag.count('spanish')
+language_tag.count('spanish')
 #NOTE:one are chinese
-#language_tag.count('swedish') #Strange
+language_tag.count('swedish') #Strange
 #NOTE:most are in Chinese , Japanese , Korean
 
 def findAllSongsOfLanguage(song_info_data,song_lyrics_data,language_tag,language):
@@ -163,16 +163,55 @@ def findAllSongsOfLanguage(song_info_data,song_lyrics_data,language_tag,language
     #return result
 findAllSongsOfLanguage(song_info_data,song_lyrics_data,language_tag,'spanish')
 
+len(new_song_lyrics_data)
+
+LyricsInfo(new_song_lyrics_data[0]).print_lyrics()
+string=new_song_lyrics_data[0][1][1]
+print string
+u = Util()
+SentenceInfo(new_song_lyrics_data[0][1][1],u).print_info()
+time_upper_bound = string.index('[')
+time_lower_bound = string.index(']')
+type_upper_bound = string.index('<')
+type_lower_bound = string.index('>')
+time_string = string[time_upper_bound+1:time_lower_bound]
+start_string,end_string = time_string.split(" ")
+sentenceType = int(string[type_lower_bound-1])
+print string[type_lower_bound+1:]
+u=Util()
+sentence = u.sentence_cleaning(string[type_lower_bound+1:])
+
+print sentence
+tokenized_sentences = [applystemming(t,[remove_front_mark,remove_end_mark]) for t in nltk.word_tokenize(sentence)]
+tokenized_sentences[:] = (value for value in tokenized_sentences if value != '') #remove all '' in tokenized_sentences
+
+pos_tags = nltk.tag._pos_tag(tokenized_sentences, None,u.tagger)
+
 ####################################################################################
 # import class that can fatch the lyrics and song data
 import nltk
-from ReadInfo import SongInfo,SongInfoData,SentenceInfo,LyricsInfo,LyricsData
+from nltk.stem import WordNetLemmatizer
+wnl = nltk.stem.WordNetLemmatizer()
+
+from ReadInfo import *
+#u = Util()
+#LyricsInfo(new_song_lyrics_data[0],u).print_lyrics()
+
+#for lyric in new_song_lyrics_data:
+#    for sentence in lyric[1]:
+#        print sentence
+#        SentenceInfo(sentence,u).print_info()
+
+
+
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
 #TODO:remove the sentence without words
 lyrics_data = LyricsData(new_song_lyrics_data)
-lyrics_data.lyricsinfos[99].sentenceInfos[4].tokenized_sentences
-lyrics_data.lyricsinfos[99].sentenceInfos[4].pos_tags
+
+lyrics_data.lyricsinfos[0]#.senetence
+lyrics_data.lyricsinfos[3].sentenceInfos
+lyrics_data.lyricsinfos[0].print_lyrics()
 lyrics_data.lyricsinfos[216].print_lyrics()
 lyrics_data.lyricsinfos[216].print_info()
 len(lyrics_data.lyricsinfos[0].sentenceInfos)
