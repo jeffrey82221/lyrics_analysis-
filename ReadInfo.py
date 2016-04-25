@@ -292,10 +292,10 @@ class LyricsData:
             return voc_set
         if len(self.voc_dict) == 0:
 
-            four_lyricsinfos = self.splitarray(self.lyricsinfos,4)
-            four_voc_set = Parallel(n_jobs=multiprocessing.cpu_count())(
-                delayed(generate_voc_set)(element) for element in four_lyricsinfos)
-            voc_set = set().union(*four_voc_set)
+            multi_lyricsinfos = self.splitarray(self.lyricsinfos,multiprocessing.cpu_count())
+            pool = multiprocessing.Pool(multiprocessing.cpu_count())
+            multi_voc_set = pool.map(generate_voc_set, multi_lyricsinfos)
+            voc_set = set().union(*multi_voc_set)
             voc_array = list(voc_set)
             voc_array.sort()
             self.voc_dict = (dict(zip(voc_array, range(len(voc_array)))), dict(
