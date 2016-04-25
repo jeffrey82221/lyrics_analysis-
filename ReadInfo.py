@@ -294,7 +294,8 @@ class LyricsData:
 
             multi_lyricsinfos = self.splitarray(self.lyricsinfos,multiprocessing.cpu_count())
             pool = multiprocessing.Pool(multiprocessing.cpu_count())
-            multi_voc_set = pool.map(generate_voc_set, multi_lyricsinfos)
+            #multi_voc_set = pool.map(generate_voc_set, multi_lyricsinfos)
+            multi_voc_set=[ pool.apply_async(generate_voc_set, (multi_lyricsinfos[i],)) for i in range(len(multi_lyricsinfos)) ]
             voc_set = set().union(*multi_voc_set)
             voc_array = list(voc_set)
             voc_array.sort()
