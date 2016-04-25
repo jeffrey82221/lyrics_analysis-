@@ -6,6 +6,7 @@ from detecting_language import *
 import numpy as np
 from joblib import Parallel, delayed
 import multiprocessing
+from multiprocessing.pool import ApplyResult
 import dill
 
 song_info = [element.split('\t') for element in [line.rstrip('\n') for line in open('data/Western_songs_info.tsv')]]

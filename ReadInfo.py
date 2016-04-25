@@ -295,7 +295,10 @@ class LyricsData:
             multi_lyricsinfos = self.splitarray(self.lyricsinfos,multiprocessing.cpu_count())
             pool = multiprocessing.Pool(multiprocessing.cpu_count())
             #multi_voc_set = pool.map(generate_voc_set, multi_lyricsinfos)
-            multi_voc_set=[ pool.apply_async(generate_voc_set, (multi_lyricsinfos[i],)) for i in range(len(multi_lyricsinfos)) ]
+            async_results=[ pool.apply_async(generate_voc_set, (multi_lyricsinfos[i],)) for i in range(len(multi_lyricsinfos)) ]
+            pool.close()
+            map(ApplyResult.wait, async_results)
+            multi_voc_set=[r.get() for r in async_results]
             #DEBUG:
             for e in multi_voc_set:
                 print type(e)
