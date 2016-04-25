@@ -79,7 +79,7 @@ for element in adjlist:
     outfile.write(" ")
     outfile.write(str(element[1]))
     outfile.write("\n")
+    outfile.close()
 
-outfile.close()
 ###################################################################################
 # TODO create an adj matrix of song id and voc id with the same sentence connected

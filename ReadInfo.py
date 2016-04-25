@@ -291,7 +291,7 @@ class LyricsData:
     def dict_generate(self):
         if len(self.voc_dict) == 0:
 
-            four_lyricsinfos = splitarray(self.lyricsinfos,4)
+            four_lyricsinfos = self.splitarray(self.lyricsinfos,4)
             four_voc_set = Parallel(n_jobs=multiprocessing.cpu_count())(
                 delayed(generate_voc_set)(element) for element in four_lyricsinfos)
             voc_set = set().union(*four_voc_set)
