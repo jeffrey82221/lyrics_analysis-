@@ -282,18 +282,19 @@ class LyricsData:
             result.append(array[i*w:(i+1)*w])
         result[-1].extend(array[(i+1)*w:])
         return result
-    def generate_voc_set(self,lyricsinfos):
-        voc_set = set()
-        for element in lyricsinfos:
-            #self.document_frequency += Counter(element.voc_set())
-            voc_set = set().union(*[voc_set, element.voc_set()])
-        return voc_set
+
     def dict_generate(self):
+        def generate_voc_set(lyricsinfos):
+            voc_set = set()
+            for element in lyricsinfos:
+                #self.document_frequency += Counter(element.voc_set())
+                voc_set = set().union(*[voc_set, element.voc_set()])
+            return voc_set
         if len(self.voc_dict) == 0:
 
             four_lyricsinfos = self.splitarray(self.lyricsinfos,4)
             four_voc_set = Parallel(n_jobs=multiprocessing.cpu_count())(
-                delayed(self.generate_voc_set)(element) for element in four_lyricsinfos)
+                delayed(generate_voc_set)(element) for element in four_lyricsinfos)
             voc_set = set().union(*four_voc_set)
             voc_array = list(voc_set)
             voc_array.sort()
