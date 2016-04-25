@@ -49,21 +49,16 @@ song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
 
-
 print 'voc size of tokenzied terms:',len(voc_dict[0])
 lyrics_data.indexify()
 ####################################################################################
 #TODO spelling check on voc_list "spelling_check.py"
 
-
-
 ###################################################################################
-# TODO create an adj matrix of song id and voc id
+# XXX create an adj matrix of song id and voc id
 
 # 14883 lyrics data provided !
 # lyrics_data_ids = [int(element) for element in lyrics_data.ids] #574723~63476142
-
-
 
 
 adjlist = []
