@@ -284,6 +284,7 @@ class LyricsData:
         return result
 
     def dict_generate(self):
+        from multiprocessing.pool import ApplyResult
         def generate_voc_set(lyricsinfos):
             voc_set = set()
             for element in lyricsinfos:
