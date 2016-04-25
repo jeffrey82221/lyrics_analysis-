@@ -30,6 +30,7 @@ def seperate_by_func(input_list, func):
             false_list.append(element)
     return true_list, false_list
 
+voc_list=voc_dict[0].keys()
 correct_vocs, uncorrect_vocs = seperate_by_func(
     voc_list, lambda x: britsh_spell_dict.check(x) or american_spell_dict.check(x))
 
@@ -84,7 +85,7 @@ case_error_suggest_vocs = []
 long_voicing_vocs = []
 
 theshold = 1
-
+import string
 for voc in no_mark_vocs:
     sug = list(set(britsh_spell_dict.suggest(
         voc) + american_spell_dict.suggest(voc)))
@@ -119,6 +120,7 @@ for voc in no_mark_vocs:
                 continue
 
 
+
 # NOTE:Possible source of spelling error, already :
 # 1.keybaord type error (introduce the keyboard proximity)
 # 2.photenic error (using some kind of photenic similarity tool)
@@ -150,7 +152,7 @@ len(spliting_unambig_pairs)
 len(other_ambig_voc_pairs)
 len(other_unambig_voc_pairs)
 
-
+# NOTE:Edition distance still not suitable for check lyrics' spelling error 
 # TODO:still need to find out more about :
 other_unambig_voc_pairs
 other_ambig_voc_pairs

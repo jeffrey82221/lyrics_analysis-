@@ -4,6 +4,9 @@
 # XXX read data from file ##########################################################
 from detecting_language import *
 import numpy as np
+from joblib import Parallel, delayed
+import multiprocessing
+
 song_info = [element.split('\t') for element in [line.rstrip('\n') for line in open('data/Western_songs_info.tsv')]]
 song_ids = [element for element in [line.split(',') for line in open('data/Western_songs.csv')][0]]
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
@@ -14,7 +17,14 @@ print 'number of songs in Western_songs_info.csv',len(song_info)
 print 'number of songs in Western_songs_lyrics.tsv',len(song_lyrics_tmp)
 #TODO:remove none english songs :
 #detecting language
-language_tag = [get_language(''.join([sen for sen in element[1]])) for element in song_lyrics_data]
+#%timeit language_tag = [get_language(''.join([sen for sen in element[1]])) for element in song_lyrics_data]
+#REVIEW original: 43.7s parallelize: 30.9 s
+def detect_language_tag(element):
+    return get_language(''.join([sen for sen in element[1]]))
+
+language_tag=Parallel(n_jobs=multiprocessing.cpu_count())(delayed(detect_language_tag)(element) for element in song_lyrics_data)
+
+
 
 new_song_lyrics_data = [song_lyrics_data[i]  for i in range(len(language_tag)) if language_tag[i]=='english']
 print 'song number after non english songs are removed:',len(new_song_lyrics_data)
@@ -25,16 +35,21 @@ print 'song number after non english songs are removed:',len(new_song_lyrics_dat
 ####################################################################################
 # import class that can fatch the lyrics and song data
 import nltk
+from joblib import Parallel, delayed
+import multiprocessing
 from ReadInfo import *
+
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
 #TODO:remove the sentences without words
-lyrics_data = LyricsData(new_song_lyrics_data)
+lyrics_data = LyricsData(new_song_lyrics_data[:1])
 
 song_info_data = SongInfoData(song_info)
 
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
+
+
 print 'voc size of tokenzied terms:',len(voc_dict[0])
 lyrics_data.indexify()
 ####################################################################################

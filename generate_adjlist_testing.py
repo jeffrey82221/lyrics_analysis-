@@ -207,7 +207,7 @@ from ReadInfo import *
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
 #TODO:remove the sentence without words
-lyrics_data = LyricsData(new_song_lyrics_data)
+lyrics_data = LyricsData(new_song_lyrics_data[:100])
 
 lyrics_data.lyricsinfos[0]#.senetence
 lyrics_data.lyricsinfos[3].sentenceInfos
@@ -215,6 +215,21 @@ lyrics_data.lyricsinfos[0].print_lyrics()
 lyrics_data.lyricsinfos[216].print_lyrics()
 lyrics_data.lyricsinfos[216].print_info()
 len(lyrics_data.lyricsinfos[0].sentenceInfos)
+
+length=len(lyrics_data.lyricsinfos)
+def splitarray(array,k):
+    result = []
+    length = len(array)
+    w = length/k
+    for i in range(k):
+        result.append(array[i*w:(i+1)*w])
+    result[-1].extend(array[(i+1)*w:])
+    return result
+splitarray(lyrics_data.lyricsinfos,4)
+lyrics_data.lyricsinfos[length/4:length/2]
+lyrics_data.lyricsinfos[length/2:(length/4)*3]
+lyrics_data.lyricsinfos[(length/4)*3:]
+
 song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
