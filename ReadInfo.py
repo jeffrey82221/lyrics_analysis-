@@ -274,7 +274,7 @@ class LyricsData:
 
     def findInfobyID(self, id):
         return self.lyricsinfos[self.ids.index(id)]
-    def splitarray(array,k):
+    def splitarray(self,array,k):
         result = []
         length = len(array)
         w = length/k
