@@ -7,7 +7,6 @@ import numpy as np
 from joblib import Parallel, delayed
 import multiprocessing
 from multiprocessing.pool import ApplyResult
-import dill
 
 song_info = [element.split('\t') for element in [line.rstrip('\n') for line in open('data/Western_songs_info.tsv')]]
 song_ids = [element for element in [line.split(',') for line in open('data/Western_songs.csv')][0]]
@@ -51,24 +50,31 @@ song_info_data = SongInfoData(song_info)
 voc_dict = lyrics_data.dict_generate()
 
 print 'voc size of tokenzied terms:',len(voc_dict[0])
-lyrics_data.indexify(1)
-#DEBUG:
-for l in lyrics_data.lyricsinfos:
-    for s in l.sentenceInfos:
-        print s.tokenized_sentences
+
 ####################################################################################
 #TODO spelling check on voc_list "spelling_check.py"
 
 ###################################################################################
+
+
+
 # XXX create an adj matrix of song id and voc id
 
-# 14883 lyrics data provided !
-# lyrics_data_ids = [int(element) for element in lyrics_data.ids] #574723~63476142
+#generate voc_set_index for each lyrics
+def adjlist_generation(l):
+    voc_index_set = map(lambda x:voc_dict[0][x],l.voc_set())
+    return zip([l.ID]*len(voc_index_set),list(voc_index_set))
+
+lyrics_adjlist = Parallel(n_jobs=multiprocessing.cpu_count())(
+            delayed(adjlist_generation)(l) for l in lyrics_data.lyricsinfos)
 
 
 adjlist = []
-for element in lyrics_data.lyricsinfos:
-    adjlist.extend(zip([element.ID]*len(element.voc_set()),list(element.voc_set())))
+for a in lyrics_adjlist:
+    adjlist.extend(a)
+
+# 14883 lyrics data provided !
+# lyrics_data_ids = [int(element) for element in lyrics_data.ids] #574723~63476142
 
 # generate adjlist file
 
@@ -79,7 +85,7 @@ for element in adjlist:
     outfile.write(" ")
     outfile.write(str(element[1]))
     outfile.write("\n")
-    outfile.close()
+outfile.close()
 
 ###################################################################################
 # TODO create an adj matrix of song id and voc id with the same sentence connected
