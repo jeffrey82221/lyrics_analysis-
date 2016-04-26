@@ -40,7 +40,7 @@ import nltk
 from joblib import Parallel, delayed
 import multiprocessing
 from ReadInfo import *
-from multiprocessing.pool import ApplyResult
+
 
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
