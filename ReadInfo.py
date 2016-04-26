@@ -307,8 +307,8 @@ class LyricsData:
             map(ApplyResult.wait, async_results)
             multi_voc_set=[r.get() for r in async_results]
             #DEBUG:
-            for e in multi_voc_set:
-                print e
+            #for e in multi_voc_set:
+            #    print e
             voc_set = set().union(*multi_voc_set)
             voc_array = list(voc_set)
             voc_array.sort()

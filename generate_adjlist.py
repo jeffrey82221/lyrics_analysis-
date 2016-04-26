@@ -41,19 +41,21 @@ from joblib import Parallel, delayed
 import multiprocessing
 from ReadInfo import *
 
-
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
 #TODO:remove the sentences without words
 lyrics_data = LyricsData(new_song_lyrics_data[:12])
-
 song_info_data = SongInfoData(song_info)
 
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
 
 print 'voc size of tokenzied terms:',len(voc_dict[0])
-lyrics_data.indexify()
+lyrics_data.indexify(1)
+#DEBUG:
+for l in lyrics_data.lyricsinfos:
+    for s in l.sentenceInfos:
+        print s.tokenized_sentences
 ####################################################################################
 #TODO spelling check on voc_list "spelling_check.py"
 
