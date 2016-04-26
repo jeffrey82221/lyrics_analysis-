@@ -255,12 +255,7 @@ class LyricsInfo:
         for element in vocSet:
             count.append(vocs.count(element))
         return dict(zip(vocs, count))
-def generate_voc_set(lyricsinfos):
-    voc_set = set()
-    for element in lyricsinfos:
-        #self.document_frequency += Counter(element.voc_set())
-        voc_set = set().union(*[voc_set, element.voc_set()])
-    return voc_set
+
 
 class LyricsData:
     lyricsinfos = []
@@ -287,23 +282,19 @@ class LyricsData:
             result.append(array[i*w:(i+1)*w])
         result[-1].extend(array[(i+1)*w:])
         return result
-
+    def generate_voc_set(self,lyricsinfos):
+        voc_set = set()
+        for element in lyricsinfos:
+            #self.document_frequency += Counter(element.voc_set())
+            voc_set = set().union(*[voc_set, element.voc_set()])
+        return voc_set
     def dict_generate(self):
-
-
         if len(self.voc_dict) == 0:
 
-            multi_lyricsinfos = self.splitarray(self.lyricsinfos,multiprocessing.cpu_count())
-            pool = multiprocessing.Pool(multiprocessing.cpu_count())
-            #multi_voc_set = pool.map(generate_voc_set, multi_lyricsinfos)
-            async_results=[ pool.apply_async(generate_voc_set, (multi_lyricsinfos[i],)) for i in range(len(multi_lyricsinfos)) ]
-            pool.close()
-            map(ApplyResult.wait, async_results)
-            multi_voc_set=[r.get() for r in async_results]
-            #DEBUG:
-            for e in multi_voc_set:
-                print type(e)
-            voc_set = set().union(*multi_voc_set)
+            four_lyricsinfos = self.splitarray(self.lyricsinfos,4)
+            four_voc_set = Parallel(n_jobs=multiprocessing.cpu_count())(
+                delayed(self.generate_voc_set)(element) for element in four_lyricsinfos)
+            voc_set = set().union(*four_voc_set)
             voc_array = list(voc_set)
             voc_array.sort()
             self.voc_dict = (dict(zip(voc_array, range(len(voc_array)))), dict(
@@ -331,4 +322,4 @@ class LyricsData:
             print lyrics.ID
     def indexify(self, monitor=False):
         Parallel(n_jobs=multiprocessing.cpu_count())(
-            delayed(self.indexify_single)(lyrics,monitor) for lyrics in self.lyricsinfos)
+            delayed(indexify_single)(lyrics,monitor) for lyrics in self.lyricsinfos)
