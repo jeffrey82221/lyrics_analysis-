@@ -1,12 +1,13 @@
+from __future__ import print_function
+
 import sys
-print sys.argv
 
 try:
-    inputfilename = sys.argv[0]
-    outputfilename = sys.argv[1]
-    dimension = sys.argv[2]
+    inputfilename = sys.argv[1]
+    outputfilename = sys.argv[2]
+    dimension = sys.argv[3]
 except:
-    print "no enought argument input , should input 1. input filename 2. output filename 3. dimension"
+    print("no enought argument input , should input 1. input filename 2. output filename 3. dimension")
 
 
 
@@ -38,13 +39,13 @@ embedding_matrix = np.matrix(embedding_array)
 from tsne import bh_sne
 #model = TSNE(n_components=2, perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=200, metric='euclidean', init='random')
 
-print "start transforming..."
+print("start transforming...")
 #embedding_2D = model.fit_transform(embedding_matrix)
 embedding_2D = bh_sne(embedding_matrix,d=dimension,theta=0.2)
 
 #TODO:save the result as excel file
 
-print "start saving the result..."
+print("start saving the result...")
 #REVIEW:####saving the object###########################
 import pickle
 pfile = open(outputfilename,'w')
