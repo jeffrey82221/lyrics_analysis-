@@ -290,7 +290,7 @@ class LyricsData:
 
     def dict_generate(self):
 
-
+        from multiprocessing.pool import ApplyResult
         if len(self.voc_dict) == 0:
 
             multi_lyricsinfos = self.splitarray(self.lyricsinfos,multiprocessing.cpu_count())
