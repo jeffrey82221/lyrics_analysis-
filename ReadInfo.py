@@ -261,10 +261,10 @@ def generate_voc_set(lyricsinfos):
         #self.document_frequency += Counter(element.voc_set())
         voc_set = set().union(*[voc_set, element.voc_set()])
     return voc_set
-def indexify_single(lyrics,monitor):
+def indexify_single(lyrics,monitor,voc_dict):
     for sentence in lyrics.sentenceInfos:
         for i in range(len(sentence.tokenized_sentences)):
-            sentence.tokenized_sentences[i] = self.voc_dict[
+            sentence.tokenized_sentences[i] = voc_dict[
                 0][sentence.tokenized_sentences[i]]
     if monitor:
         print lyrics.ID
@@ -331,4 +331,4 @@ class LyricsData:
 
     def indexify(self, monitor=False):
         Parallel(n_jobs=multiprocessing.cpu_count())(
-            delayed(indexify_single)(lyrics,monitor) for lyrics in self.lyricsinfos)
+            delayed(indexify_single)(lyrics,monitor,self.voc_dict) for lyrics in self.lyricsinfos)

@@ -45,7 +45,7 @@ from ReadInfo import *
 #REVIEW: #### initialize the lyrics_data object from database
 #TODO:tokenization is still not very accurate!!
 #TODO:remove the sentences without words
-lyrics_data = LyricsData(new_song_lyrics_data[:1])
+lyrics_data = LyricsData(new_song_lyrics_data[:12])
 
 song_info_data = SongInfoData(song_info)
 
