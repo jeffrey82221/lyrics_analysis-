@@ -1,5 +1,18 @@
+import sys
+print sys.argv
+
+try:
+    inputfilename = sys.argv[0]
+    outputfilename = sys.argv[1]
+    dimension = sys.argv[2]
+except:
+    print "no enought argument input , should input 1. input filename 2. output filename 3. dimension"
+
+
+
+
 import numpy as np
-result_lines = [line.rstrip('\n') for line in open('embeddings/kk_c1_d64_walk_10_cleaned.embeddings')]
+result_lines = [line.rstrip('\n') for line in open(inputfilename)]
 result_lines
 
 object_count = len(result_lines)
@@ -27,13 +40,13 @@ from tsne import bh_sne
 
 print "start transforming..."
 #embedding_2D = model.fit_transform(embedding_matrix)
-embedding_2D = bh_sne(embedding_matrix,d=3,theta=0.2)
+embedding_2D = bh_sne(embedding_matrix,d=dimension,theta=0.2)
 
 #TODO:save the result as excel file
 
 print "start saving the result..."
 #REVIEW:####saving the object###########################
 import pickle
-pfile = open("kk_c1_d64_walk_10_tsne_d3_cleaned.embeddings",'w')
+pfile = open(outputfilename,'w')
 pickle.dump(embedding_2D,pfile)
 pfile.close()
