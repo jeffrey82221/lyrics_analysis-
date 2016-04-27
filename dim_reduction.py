@@ -7,7 +7,8 @@ try:
     outputfilename = sys.argv[2]
     dimension = sys.argv[3]
 except:
-    print("no enought argument input , should input 1. input filename 2. output filename 3. dimension")
+    print("no enought argument input ! \n should input :\n 1. input filename 2. output filename 3. dimension")
+    exit()
 
 
 
@@ -36,18 +37,32 @@ embedding_matrix = np.matrix(embedding_array)
 
 # XXX T-SME visualization of result
 #from sklearn.manifold import TSNE
-from tsne import bh_sne
-#model = TSNE(n_components=2, perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=200, metric='euclidean', init='random')
+import sklearn
+def cosine_distance(X1,X2):
+    return sklearn.metrics.pairwise.pairwise_distances(X1,X2, metric='cosine')
 
-print("start transforming...")
-#embedding_2D = model.fit_transform(embedding_matrix)
-embedding_2D = bh_sne(embedding_matrix,d=dimension,theta=0.2)
+try:
+    from tsne import bh_sne
+    print("start transforming...")
+    embedding_2D = bh_sne(embedding_matrix,d=int(dimension),theta=0.2)
+except:
+    from sklearn.manifold import TSNE
+    print("start transforming...")
+    model = TSNE(n_components=int(dimension), perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=1000, metric='euclidean', init='pca',angle=0.2)
+    embedding_2D = model.fit_transform(embedding_matrix)
+#
+
 
 #TODO:save the result as excel file
 
 print("start saving the result...")
 #REVIEW:####saving the object###########################
-import pickle
-pfile = open(outputfilename,'w')
-pickle.dump(embedding_2D,pfile)
-pfile.close()
+np.savetxt(outputfilename,embedding_2D)
+#save the mapping file (from order to index)
+np.savetxt(outputfilename+'.keys',np.array(embedding_key).astype(int),fmt='%d')
+print('saved file:',outputfilename,'size:',np.shape(embedding_2D))
+print('saved keys:',outputfilename+'.keys','size:',np.shape(np.array(embedding_key)))
+#import pickle
+#pfile = open(outputfilename,'w')
+#pickle.dump(embedding_2D,pfile)
+#pfile.close()
