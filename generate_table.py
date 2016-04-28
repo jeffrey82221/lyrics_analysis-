@@ -50,5 +50,5 @@ for i in range(dim):
 song_df=DataFrame(song_dict)
 voc_df=DataFrame(voc_dict)
 
-song_df.to_excel(filename+'.xlsx', sheet_name='sheet1', index=False)
-voc_df.to_excel(filename+'.xlsx', sheet_name='sheet1', index=False)
+song_df.to_excel(filename+'.song.xlsx', sheet_name='sheet1', index=False)
+voc_df.to_excel(filename+'.voc.xlsx', sheet_name='sheet1', index=False)
