@@ -1,4 +1,5 @@
 from __future__ import print_function
+import sys
 try:
     inputfilename = sys.argv[1]
     outputfilename = sys.argv[2]

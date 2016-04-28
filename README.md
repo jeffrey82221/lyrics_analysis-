@@ -20,6 +20,28 @@ deepwalk \
   --representation-size 64 \
   --format edgelist
 
+
+Experiment :
+deepwalk \
+  --input cleaned.adjlist \
+  --output out_new.embeddings \
+  --number-walks 1000 \
+  --workers 12 \
+  --walk-length 4 \
+  --representation-size 64 \
+  --format edgelist
+deepwalk \
+  --input cleaned.adjlist \
+  --output out_new.embeddings \
+  --number-walks 1000 \
+  --workers 12 \
+  --walk-length 4 \
+  --representation-size 64 \
+  --format edgelist
+
+
+
+
 How to do dimension reduction ?
 
 python dim_reduction.py

@@ -44,25 +44,22 @@ def cosine_distance(X1,X2):
 try:
     from tsne import bh_sne
     print("start transforming...")
-    embedding_2D = bh_sne(embedding_matrix,d=int(dimension),theta=0.2)
+    embedding_low = bh_sne(embedding_matrix,d=int(dimension),theta=0.2)
 except:
     from sklearn.manifold import TSNE
     print("start transforming...")
     model = TSNE(n_components=int(dimension), perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=1000, metric='euclidean', init='pca',angle=0.2)
-    embedding_2D = model.fit_transform(embedding_matrix)
+    embedding_low = model.fit_transform(embedding_matrix)
 #
-
-
 #TODO:save the result as excel file
-
 print("start saving the result...")
 #REVIEW:####saving the object###########################
-np.savetxt(outputfilename,embedding_2D)
+np.savetxt(outputfilename,embedding_low)
 #save the mapping file (from order to index)
 np.savetxt(outputfilename+'.keys',np.array(embedding_key).astype(int),fmt='%d')
-print('saved file:',outputfilename,'size:',np.shape(embedding_2D))
+print('saved file:',outputfilename,'size:',np.shape(embedding_low))
 print('saved keys:',outputfilename+'.keys','size:',np.shape(np.array(embedding_key)))
 #import pickle
 #pfile = open(outputfilename,'w')
-#pickle.dump(embedding_2D,pfile)
+#pickle.dump(embedding_low,pfile)
 #pfile.close()
