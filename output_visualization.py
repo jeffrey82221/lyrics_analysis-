@@ -41,7 +41,7 @@ len(lyrics_data.lyricsinfos)
 #REVIEW:####load the reduction 2D embedding###########################
 import numpy as np
 import pickle
-pfile = open("kk_c1_d64_walk_100_tsne_d3_cleaned.embeddings", 'r')
+pfile = open("embeddings/not excel/kk_c1_d64_walk_10_cleaned", 'r')
 embedding_2D = pickle.load(pfile)
 pfile.close()
 

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 #NOTE ######################################################################
 
 # NOTE some special sentences needs to be remove
@@ -43,7 +45,7 @@ class SongInfo:
         self.artist = array[3]
 
     def print_info(self):
-        print self.ID, ",", self.title, ",", self.album, ",", self.artist
+        print(self.ID, ",", self.title, ",", self.album, ",", self.artist)
 
 
 class SongInfoData:
@@ -208,7 +210,7 @@ class SentenceInfo:
                 1] != '' else t[0] for t in pos_tag_lem]
 
     def print_info(self):
-        print self.startTime, ",", self.endTime, ",", self.sentenceType, ",", self.sentence
+        print(self.startTime, ",", self.endTime, ",", self.sentenceType, ",", self.sentence)
 
 
 class LyricsInfo:
@@ -236,7 +238,7 @@ class LyricsInfo:
     def print_info(self):
         for element in self.sentenceInfos:
             element.print_info()
-            print element.pos_tags
+            print(element.pos_tags)
 
     def voc_set(self):
         vocSet = set()
@@ -263,6 +265,7 @@ def generate_voc_set(lyricsinfos):
     return voc_set
 
 class LyricsData:
+
     lyricsinfos = []
     ids = []
     voc_dict = []

@@ -1,6 +1,7 @@
 
 
 ##### XXX MAIN CODE START FROM HERE !
+from __future__ import print_function
 # XXX read data from file ##########################################################
 from detecting_language import *
 import numpy as np
@@ -13,9 +14,9 @@ song_ids = [element for element in [line.split(',') for line in open('data/Weste
 song_lyrics_tmp = [element.split('\t') for element in open('data/Western_songs_lyrics.tsv')]
 song_lyrics_data = [[element[0],element[1].split('\\n')] for element in song_lyrics_tmp]
 
-print 'number of songs in Western_songs.csv',len(song_ids)
-print 'number of songs in Western_songs_info.csv',len(song_info)
-print 'number of songs in Western_songs_lyrics.tsv',len(song_lyrics_tmp)
+print('number of songs in Western_songs.csv',len(song_ids))
+print('number of songs in Western_songs_info.csv',len(song_info))
+print('number of songs in Western_songs_lyrics.tsv',len(song_lyrics_tmp))
 #TODO:remove none english songs :
 #detecting language
 #%timeit language_tag = [get_language(''.join([sen for sen in element[1]])) for element in song_lyrics_data]
@@ -28,7 +29,7 @@ language_tag=Parallel(n_jobs=multiprocessing.cpu_count())(delayed(detect_languag
 
 
 new_song_lyrics_data = [song_lyrics_data[i]  for i in range(len(language_tag)) if language_tag[i]=='english']
-print 'song number after non english songs are removed:',len(new_song_lyrics_data)
+print('song number after non english songs are removed:',len(new_song_lyrics_data))
 
 ##################################################################################
 
@@ -49,7 +50,14 @@ song_info_data = SongInfoData(song_info)
 # XXX form an voc list with voc id
 voc_dict = lyrics_data.dict_generate()
 
-print 'voc size of tokenzied terms:',len(voc_dict[0])
+print('voc size of tokenzied terms:',len(voc_dict[0]))
+
+
+#store voc_dict to file
+import pickle
+f = open('dict.voc','w')
+pickle.dump(voc_dict, f, pickle.HIGHEST_PROTOCOL)
+
 
 ####################################################################################
 #TODO spelling check on voc_list "spelling_check.py"

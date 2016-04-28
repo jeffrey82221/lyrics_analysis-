@@ -13,11 +13,12 @@ usage: deepwalk [-h] [--debug] [--format FORMAT] --input [INPUT] [-l LOG]
 EXAMPLE :
 deepwalk \
   --input cleaned.adjlist \
-  --output out_new.embeddings
-  --number-walks 100 \
+  --output out_new.embeddings \
+  --number-walks 1000 \
   --workers 12 \
-  --walk-length 2 \
-  --representation-size 64
+  --walk-length 4 \
+  --representation-size 64 \
+  --format edgelist
 
 How to do dimension reduction ?
 
