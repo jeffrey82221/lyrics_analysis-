@@ -19,7 +19,7 @@ voc_size = len(voc_dict[0])
 voc_keys = keys[:voc_size]
 song_keys = keys[voc_size:]
 lyrics_size = len(song_keys)
-em = np.loadtxt(inputfilename)
+em = np.loadtxt(filename)
 embedding = np.matrix(em)
 dim = embedding.shape[1]
 #import meta data
