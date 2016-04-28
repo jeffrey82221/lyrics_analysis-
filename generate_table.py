@@ -7,8 +7,6 @@ except:
     print("no enought argument input ! \n should input :\n 1. input filename 2. output filename")
     exit()
 
-
-
 import numpy as np
 import pickle
 import numpy as np
