@@ -3,15 +3,14 @@ from __future__ import print_function
 import sys
 
 try:
-    inputfilename = sys.argv[1]
-    outputfilename = sys.argv[2]
-    dimension = sys.argv[3]
+    filename = sys.argv[1]
+    dimension = sys.argv[2]
 except:
-    print("no enought argument input ! \n should input :\n 1. input filename 2. output filename 3. dimension")
+    print("no enought argument input ! \n should input :\n 1. input filename  2. dimension")
     exit()
 
 import numpy as np
-result_lines = [line.rstrip('\n') for line in open(inputfilename)]
+result_lines = [line.rstrip('\n') for line in open(filename)]
 result_lines
 
 object_count = len(result_lines)
@@ -51,6 +50,7 @@ except:
 #TODO:save the result as excel file
 print("start saving the result...")
 #REVIEW:####saving the object###########################
+outputfilename=filename+'.'+str(dimension)+'d'
 np.savetxt(outputfilename,embedding_low)
 #save the mapping file (from order to index)
 np.savetxt(outputfilename+'.keys',np.array(embedding_key).astype(int),fmt='%d')
