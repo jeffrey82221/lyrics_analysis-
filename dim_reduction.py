@@ -10,9 +10,6 @@ except:
     print("no enought argument input ! \n should input :\n 1. input filename 2. output filename 3. dimension")
     exit()
 
-
-
-
 import numpy as np
 result_lines = [line.rstrip('\n') for line in open(inputfilename)]
 result_lines

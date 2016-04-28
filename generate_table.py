@@ -1,8 +1,8 @@
 from __future__ import print_function
 import sys
 try:
-    inputfilename = sys.argv[1]
-    outputfilename = sys.argv[2]
+    filename = sys.argv[1]
+
 except:
     print("no enought argument input ! \n should input :\n 1. input filename 2. output filename")
     exit()
@@ -11,20 +11,10 @@ except:
 
 import numpy as np
 import pickle
-inputfilename = 'out_new_2d.embeddings'
 import numpy as np
 import pickle
 voc_dict=pickle.load(open('dict.voc','rb'))
-keys = np.loadtxt(inputfilename+'.keys').astype(int)
-voc_size = len(voc_dict[0])
-voc_keys = keys[:voc_size]
-song_keys = keys[voc_size:]
-lyrics_size = len(song_keys)
-em = np.loadtxt(inputfilename)
-embedding = np.matrix(em)
-
-voc_dict=pickle.load(open('dict.voc','rb'))
-keys = np.loadtxt(inputfilename+'.keys').astype(int)
+keys = np.loadtxt(filename+'.keys').astype(int)
 voc_size = len(voc_dict[0])
 voc_keys = keys[:voc_size]
 song_keys = keys[voc_size:]
@@ -60,5 +50,5 @@ for i in range(dim):
 song_df=DataFrame(song_dict)
 voc_df=DataFrame(voc_dict)
 
-song_df.to_excel('embedding_song.xlsx', sheet_name='sheet1', index=False)
-voc_df.to_excel('embedding_voc.xlsx', sheet_name='sheet1', index=False)
+song_df.to_excel(filename+'.xlsx', sheet_name='sheet1', index=False)
+voc_df.to_excel(filename+'.xlsx', sheet_name='sheet1', index=False)
