@@ -4,7 +4,7 @@ try:
     filename = sys.argv[1]
 
 except:
-    print("no enought argument input ! \n should input :\n 1. input filename 2. output filename")
+    print("no enought argument input ! \n should input :\n 1. input filename")
     exit()
 
 import numpy as np
@@ -32,7 +32,7 @@ title_list = [song_info_data.findInfobyID(sk).title for sk in song_keys]
 album_list = [song_info_data.findInfobyID(sk).album for sk in song_keys]
 
 #TODO match each voc index with its voc word
-voc_list = [voc_dict[1][e] for e in voc_keys]
+voc_list = [voc_dict[1][e-1] for e in voc_keys]
 
 from pandas import DataFrame
 
