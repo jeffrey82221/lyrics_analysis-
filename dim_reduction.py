@@ -11,8 +11,6 @@ except:
 
 import numpy as np
 result_lines = [line.rstrip('\n') for line in open(filename)]
-result_lines
-
 object_count = len(result_lines)
 splited_result_lines = []
 for i in range(1, len(result_lines)):
@@ -30,7 +28,6 @@ embedding_list.sort()
 embedding_key = [e[0] for e in embedding_list]
 embedding_array = [e[1] for e in embedding_list]
 embedding_matrix = np.matrix(embedding_array)
-
 # XXX T-SME visualization of result
 #from sklearn.manifold import TSNE
 import sklearn

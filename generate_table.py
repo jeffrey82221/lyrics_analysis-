@@ -13,7 +13,7 @@ import numpy as np
 import pickle
 voc_dict=pickle.load(open('dict.voc','rb'))
 keys = np.loadtxt(filename+'.keys').astype(int)
-voc_size = len(voc_dict[0])
+voc_size = len(voc_dict[1])
 voc_keys = keys[:voc_size]
 song_keys = keys[voc_size:]
 lyrics_size = len(song_keys)
@@ -27,12 +27,13 @@ song_info = [element.split('\t') for element in [line.rstrip('\n')
 
 from ReadInfo import *
 song_info_data = SongInfoData(song_info)
+
 artist_list = [song_info_data.findInfobyID(sk).artist for sk in song_keys]
 title_list = [song_info_data.findInfobyID(sk).title for sk in song_keys]
 album_list = [song_info_data.findInfobyID(sk).album for sk in song_keys]
 
 #TODO match each voc index with its voc word
-voc_list = [voc_dict[1][e-1] for e in voc_keys]
+voc_list = [voc_dict[1][e] for e in voc_keys]
 
 from pandas import DataFrame
 
