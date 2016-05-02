@@ -1,10 +1,10 @@
 from __future__ import print_function
 import sys
 try:
-    filename = sys.argv[1]
-
+    cf_filename = sys.argv[1]
+    dimension = sys.argv[2]
 except:
-    print("no enought argument input ! \n should input :\n 1. input filename")
+    print("no enought argument input ! \n should input :\n 1.CF file name 2. dimension")
     exit()
 filename = 'win1.w100.l32.d128.embeddings.2d'
 import numpy as np
@@ -34,7 +34,7 @@ album_list = [song_info_data.findInfobyID(sk).album for sk in song_keys]
 
 #TODO match song with its cf embeddings
 
-song_cffile =  open('CF data/song-embedding-64.csv', 'rb')
+song_cffile =  open(cf_filename, 'rb')
 song_em=np.loadtxt(song_cffile)
 song_index2order=dict(zip(song_em[:,0].astype(int).tolist(),song_em[:,1].astype(int).tolist()))
 
@@ -58,7 +58,6 @@ embedding_matrix=np.matrix(song_em_matched)
 #dimension reduction
 print('matched embedding shape = ',np.shape(song_em_matched))
 
-dimension = 2
 import sklearn
 def cosine_distance(X1,X2):
     return sklearn.metrics.pairwise.pairwise_distances(X1,X2, metric='cosine')
@@ -87,4 +86,4 @@ for i in range(dim):
 song_df=DataFrame(song_dict)
 
 print(song_df)
-song_df.to_excel(filename+'.song.cf.xlsx', sheet_name='sheet1', index=False)
+song_df.to_excel('song.cf.xlsx', sheet_name='sheet1', index=False)
