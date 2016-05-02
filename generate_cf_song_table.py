@@ -91,4 +91,4 @@ for i in range(dim):
 song_df=DataFrame(song_dict)
 
 print(song_df)
-song_df.to_excel(cf_filename+'.'+dimension+'d'+'.xlsx', sheet_name='sheet1', index=False)
+song_df.to_excel(cf_filename+'.'+str(dimension)+'d'+'.xlsx', sheet_name='sheet1', index=False)
