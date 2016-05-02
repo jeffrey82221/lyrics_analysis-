@@ -1,3 +1,14 @@
+#NOTE: this code seperate the song voc reducted embedding into song excel file  and voc excel file respectively.
+# Input :
+# 1. the name of the reducted embedding file : *.2d
+# Pre-requirement file :
+# 1. 'data/Western_songs_info.tsv' : for collecting the meta data of song
+# 2. 'dict.voc' : for collecting the term matching each voc index (input using pickle)
+# Output :
+# 1. *.song.xlsx : excel file containing song embedding as well as their meta data .
+# 2. *.voc.xlsx : excel file containing voc embedding as well as their term .
+
+
 from __future__ import print_function
 import sys
 try:

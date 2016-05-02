@@ -211,8 +211,8 @@ python generate_table.py win7.w100.l32.d128.embeddings.2d
 **
 
 DIMENSION REDUCTION FOR CF SONG EMBEDDING:
-python generate_cf_song_table.py CF\ data/song-embedding-64.csv 2
-python generate_cf_song_table.py CF data/song-embedding-128.csv 2
+python generate_cf_song_table.py song-embedding-64.csv 2
+python generate_cf_song_table.py song-embedding-128.csv 2
 
 TODO:
 1. Make ReadInfo Class more perfect :

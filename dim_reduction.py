@@ -1,3 +1,13 @@
+#NOTE:In this code, it convert a high dimension embeddings to a low dimension embedding using TSNE.
+# Input :
+# 1. the filename of the embedding file (.embeddings)
+# 2. the dimension one wish to reducted into.
+# Output :
+# 1. the reducted voc and song embedding in file *.2d
+# 2. the keys of the song and voc in file *.keys)
+
+
+
 from __future__ import print_function
 
 import sys
