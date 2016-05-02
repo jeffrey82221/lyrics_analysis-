@@ -1,3 +1,6 @@
+# this code is use to detect languages of each lyrics
+# Input : string
+# Output : language_tag
 from nltk.corpus import stopwords   # stopwords to detect language
 from nltk import wordpunct_tokenize # function to split up our words
 from sys import stdin               # how else should we get our input :)
