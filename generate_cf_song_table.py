@@ -6,6 +6,8 @@ try:
 except:
     print("no enought argument input ! \n should input :\n 1.CF file name 2. dimension")
     exit()
+
+print('cf_filename = ',cf_filename)
 filename = 'win1.w100.l32.d128.embeddings.2d'
 import numpy as np
 import pickle
@@ -69,11 +71,14 @@ try:
 except:
     from sklearn.manifold import TSNE
     print("start transforming...")
+
     model = TSNE(n_components=int(dimension), perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=1000, metric='euclidean', init='pca',angle=0.2)
     embedding_low = model.fit_transform(embedding_matrix)
 
 print('result shape = ',np.shape(embedding_low))
+
 from pandas import DataFrame
+
 
 song_dict = dict()
 song_dict['title']=title_list
