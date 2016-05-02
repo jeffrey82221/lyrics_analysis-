@@ -36,7 +36,7 @@ album_list = [song_info_data.findInfobyID(sk).album for sk in song_keys]
 
 #TODO match song with its cf embeddings
 
-song_cffile =  open(cf_filename, 'rb')
+song_cffile =  open('CF data/'+cf_filename, 'rb')
 song_em=np.loadtxt(song_cffile)
 song_index2order=dict(zip(song_em[:,0].astype(int).tolist(),song_em[:,1].astype(int).tolist()))
 
