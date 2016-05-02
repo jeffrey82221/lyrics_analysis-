@@ -73,7 +73,7 @@ except:
     model = TSNE(n_components=int(dimension), perplexity=30.0, early_exaggeration=10.0, learning_rate=1000.0,  n_iter=1000, metric='euclidean', init='pca',angle=0.2)
     embedding_low = model.fit_transform(embedding_matrix)
 
-
+print('result shape = ',np.shape(embedding_low))
 from pandas import DataFrame
 
 song_dict = dict()
@@ -86,5 +86,5 @@ for i in range(dim):
 
 song_df=DataFrame(song_dict)
 
-
-song_df.to_excel(filename+'.song.xlsx', sheet_name='sheet1', index=False)
+print(song_df)
+song_df.to_excel(filename+'.song.cf.xlsx', sheet_name='sheet1', index=False)
