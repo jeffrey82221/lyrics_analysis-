@@ -101,11 +101,13 @@ B2 = bias_variable([128],name = "B2")
 W3 = weight_variable([128, 128],name = "W3")
 B3 = bias_variable([128],name = "B3")
 
-with tf.device('/cpu:0'):
+with tf.device('/gpu:0'):
     H1 = tf.nn.dropout(tf.nn.sigmoid(tf.matmul(X, W1) + B1), 1.)
     H2 = tf.nn.dropout(tf.nn.sigmoid(tf.matmul(H1, W2) + B2), 1.)
     O = tf.matmul(H2, W3) + B3
-    loss = tf.reduce_mean(tf.square(Y - O))
+    square = tf.square(Y-O)
+with tf.device('/cpu:0'):
+    loss = tf.reduce_mean(square)
     optimizer = tf.train.GradientDescentOptimizer(0.5)
     train = optimizer.minimize(loss)
 
