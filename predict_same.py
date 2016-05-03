@@ -91,7 +91,6 @@ song_lyrics_em_matched = song_lyrics_em[np.array(match_keys)==1,:]
 song_lyrics_em_matched2 = song_lyrics_em2[np.array(match_keys)==1,:]
 print("matched_count = ",sum(match_keys))
 print("song_lyrics_em = ",np.shape(song_lyrics_em_matched))
-print("song_cf_em = ",np.shape(song_cf_em_matched_))
 
 #TODO: seperate the song embedding into training set ,validation set and testing set
 input_data = song_lyrics_em_matched
