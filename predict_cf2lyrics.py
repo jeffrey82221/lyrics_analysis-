@@ -130,7 +130,7 @@ def batch(i,length,data):
     return (data[0][perm[i*length:(i+1)*length],:],data[1][perm[i*length:(i+1)*length],:])
 
 print('start optimizing...')
-for i in range(10000):
+for i in range(100000):
     (x,y)=batch(i,12000,train_data)
     if i%100==0:
         print(sess.run(loss,feed_dict={X:val_data[1], Y:val_data[0]}))

@@ -71,11 +71,12 @@ print("song_cf_em = ",np.shape(song_cf_em_matched_))
 #TODO: seperate the song embedding into training set ,validation set and testing set
 input_data = song_lyrics_em_matched
 output_data = song_cf_em_matched_
+(total_size,dim)=np.shape(output_data)
 
 print('normalization of each dimension...')
 
 for i in range(np.shape(input_data)[1]):
-    input_data[:,i]=(song_lyrics_em_matched[:,i]-np.mean(song_lyrics_em_matched[:,i]))/(np.var(song_lyrics_em_matched[:,i])**0.5)
+    input_data[:,i]=np.transpose(np.matrix(np.random.randn(total_size)))
     output_data[:,i]=(song_cf_em_matched_[:,i]-np.mean(song_cf_em_matched_[:,i]))/(np.var(song_cf_em_matched_[:,i])**0.5)
 
 print('seperate data into train,validation and test set...')
