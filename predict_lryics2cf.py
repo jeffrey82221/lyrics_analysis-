@@ -71,6 +71,13 @@ print("song_cf_em = ",np.shape(song_cf_em_matched_))
 #TODO: seperate the song embedding into training set ,validation set and testing set
 input_data = song_lyrics_em_matched
 output_data = song_cf_em_matched_
+import sklearn.preprocessing as preprocessing
+
+input_data = preprocessing.normalize(input_data, norm='l2', axis=0, copy=True)
+output_data = preprocessing.normalize(output_data, norm='l2', axis=0, copy=True)
+print('variance of lyrics embedding : ',np.var(input_data))
+print('variance of CF embedding : ',np.var(output_data))
+
 train_size = 12000
 val_size = 1200
 test_size = np.shape(output_data)[0]-train_size-val_size
@@ -79,10 +86,6 @@ train_data = (input_data[:train_size,:],output_data[:train_size,:])
 val_data = (input_data[train_size:train_size+val_size,:],output_data[train_size:train_size+val_size,:])
 test_data = (input_data[train_size+val_size:,:],output_data[train_size+val_size:,:])
 
-np.max(input_data)
-np.min(input_data)
-np.max(output_data)
-np.min(output_data)
 #TODO: construct a neural network with song-voc embedding as input and song cf embedding as output
 import tensorflow as tf
 def weight_variable(shape,name = "W"):
