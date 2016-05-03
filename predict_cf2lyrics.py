@@ -71,13 +71,14 @@ print("song_cf_em = ",np.shape(song_cf_em_matched_))
 #TODO: seperate the song embedding into training set ,validation set and testing set
 input_data = song_lyrics_em_matched
 output_data = song_cf_em_matched_
-import sklearn.preprocessing as preprocessing
 
-input_data = preprocessing.normalize(input_data, norm='l2', axis=0, copy=True)
-output_data = preprocessing.normalize(output_data, norm='l2', axis=0, copy=True)
-print('variance of lyrics embedding : ',np.var(input_data))
-print('variance of CF embedding : ',np.var(output_data))
+print('normalization of each dimension...')
 
+for i in range(np.shape(input_data)[1]):
+    input_data[:,i]=(song_lyrics_em_matched[:,i]-np.mean(song_lyrics_em_matched[:,i]))/(np.var(song_lyrics_em_matched[:,i])**0.5)
+    output_data[:,i]=(song_cf_em_matched_[:,i]-np.mean(song_cf_em_matched_[:,i]))/(np.var(song_cf_em_matched_[:,i])**0.5)
+
+print('seperate data into train,validation and test set...')
 train_size = 12000
 val_size = 1200
 test_size = np.shape(output_data)[0]-train_size-val_size
@@ -86,7 +87,7 @@ train_data = (input_data[:train_size,:],output_data[:train_size,:])
 val_data = (input_data[train_size:train_size+val_size,:],output_data[train_size:train_size+val_size,:])
 test_data = (input_data[train_size+val_size:,:],output_data[train_size+val_size:,:])
 
-
+print('constructing the network')
 #TODO: construct a neural network with song-voc embedding as input and song cf embedding as output
 import tensorflow as tf
 def weight_variable(shape,name = "W"):
@@ -128,6 +129,7 @@ def batch(i,length,data):
         perm = np.random.permutation(np.shape(data[0])[0])
     return (data[0][perm[i*length:(i+1)*length],:],data[1][perm[i*length:(i+1)*length],:])
 
+print('start optimizing...')
 for i in range(10000):
     (x,y)=batch(i,12000,train_data)
     if i%100==0:
